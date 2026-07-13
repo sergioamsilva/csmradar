@@ -175,6 +175,19 @@
     .dest { flex: 0 0 72%; scroll-snap-align: start; }
   }
   .card { position: relative; }
+  .mc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; margin-top: 18px; }
+  .mc-grid h3 { margin: 0 0 4px; font-size: 14px; font-weight: 700; }
+  .mc-grid .desc { margin-bottom: 12px; }
+  #sel-comarca {
+    font: 650 15px system-ui, sans-serif; color: var(--ink);
+    background: var(--page); border: 1px solid var(--baseline);
+    border-radius: 9px; padding: 10px 12px; min-width: 260px; cursor: pointer;
+  }
+  .glossario { display: grid; grid-template-columns: 220px 1fr; gap: 0 28px; margin: 0; }
+  .glossario dt { font-weight: 700; font-size: 13.5px; padding: 12px 0 0; border-top: 1px solid var(--grid); }
+  .glossario dd { margin: 0; padding: 12px 0 12px; border-top: 1px solid var(--grid); font-size: 13px; color: var(--ink-2); }
+  .glossario dt:first-of-type, .glossario dd:first-of-type { border-top: none; }
+  @media (max-width: 900px) { .mc-grid, .glossario { grid-template-columns: 1fr; } }
   .baixar {
     position: absolute; top: 14px; right: 14px; z-index: 2;
     width: 30px; height: 30px; border-radius: 8px; cursor: pointer;
@@ -448,7 +461,7 @@
   </nav>
 
   <nav class="anchors" aria-label="Secções da página">
-    <a href="#sec-panorama">Panorama</a><a href="#sec-geografia">Geografia</a><a href="#sec-colocacoes">Colocações</a><a href="#sec-carreira">Carreira</a><a href="#sec-genero">Género</a><a href="#sec-sistema">Sistema</a>
+    <a href="#sec-panorama">Panorama</a><a href="#sec-geografia">Geografia</a><a href="#sec-colocacoes">Colocações</a><a href="#sec-carreira">Carreira</a><a href="#sec-comarca">A minha comarca</a><a href="#sec-genero">Género</a><a href="#sec-sistema">Sistema</a><a href="#sec-glossario">Glossário</a>
   </nav>
 
   <section class="stats" id="stats" aria-label="Indicadores principais"></section>
@@ -574,6 +587,34 @@
       <div class="duo" id="regressos"></div>
     </section>
 
+    <div class="sec-band" id="sec-comarca"><h2>A minha comarca</h2><span class="ln"></span></div>
+    <section class="card full reveal">
+      <h2>Relatório local <span class="thin" id="mc-nome"></span></h2>
+      <p class="desc">Escolha uma comarca (ou uma Relação) para ver a sua realidade: rotação, precariedade, com que preferência se consegue lá entrar, e de onde vêm e para onde vão os juízes. Dados de 2014–2026 (mapa judicial atual); independente dos filtros globais. Partilhável por link.</p>
+      <select id="sel-comarca" aria-label="Escolher comarca"></select>
+      <div class="duo" style="grid-template-columns:repeat(4,1fr)" id="mc-tiles"></div>
+      <div class="mc-grid">
+        <div>
+          <h3>Com que preferência se entra</h3>
+          <p class="desc">Mediana anual da posição, na lista de escolhas dos juízes colocados, que este destino ocupava. Barra baixa = é preciso pô-la nas primeiras escolhas.</p>
+          <div id="mc-pref"></div>
+        </div>
+        <div>
+          <h3>Lugares que mais mudaram de juiz (desde 2017)</h3>
+          <p class="desc">Os lugares concretos com mais colocações — onde a rotação é maior.</p>
+          <div class="lista" id="mc-rotacao"></div>
+        </div>
+        <div>
+          <h3>De onde vêm</h3>
+          <div id="mc-origens"></div>
+        </div>
+        <div>
+          <h3>Para onde vão</h3>
+          <div id="mc-destinos"></div>
+        </div>
+      </div>
+    </section>
+
     <div class="sec-band" id="sec-genero"><h2>Género</h2><span class="ln"></span></div>
     <section class="card reveal">
       <h2>Mulheres nos movimentos: maioria em todos os anos</h2>
@@ -609,6 +650,24 @@
       </div>
     </section>
 
+    <div class="sec-band" id="sec-glossario"><h2>Glossário</h2><span class="ln"></span></div>
+    <section class="card full reveal">
+      <h2>Os termos, para quem não é jurista</h2>
+      <dl class="glossario">
+        <dt>Movimento Judicial Ordinário (MJO)</dt><dd>O processo anual, conduzido pelo Conselho Superior da Magistratura (CSM), que coloca, transfere e promove os juízes — normalmente decidido em julho, com efeitos em setembro.</dd>
+        <dt>Comarca</dt><dd>A circunscrição territorial dos tribunais de 1.ª instância. Desde a reforma de 2014 existem 23, grosso modo uma por distrito (Lisboa e Porto estão subdivididas).</dd>
+        <dt>Tribunal da Relação</dt><dd>A 2.ª instância, que julga recursos: Lisboa, Porto, Coimbra, Évora e Guimarães. Os seus juízes (desembargadores) chegam por promoção, através de concurso curricular.</dd>
+        <dt>Supremo Tribunal de Justiça (STJ)</dt><dd>O topo da hierarquia dos tribunais judiciais (juízes conselheiros).</dd>
+        <dt>Acesso final / primeiro acesso</dt><dd>Secções do movimento: os juízes já efetivos que concorrem entre si, e os recém-formados do Centro de Estudos Judiciários na sua primeira colocação.</dd>
+        <dt>Lugar de efetivo / auxiliar</dt><dd>O titular do lugar, com estabilidade, por oposição ao juiz colocado temporariamente como reforço ou substituto.</dd>
+        <dt>Quadro complementar («bolsa»)</dt><dd>Juízes sem lugar fixo, afetados pelo CSM onde há faltas — uma bolsa por área de Relação.</dd>
+        <dt>Comissão de serviço</dt><dd>Período em que o juiz exerce funções fora dos tribunais (no CSM, no CEJ, em instituições europeias…), mantendo o vínculo.</dd>
+        <dt>Destacamento / interinidade</dt><dd>Colocações temporárias num lugar que não é o próprio, frequentemente renovadas ano a ano.</dd>
+        <dt>Antiguidade</dt><dd>A posição do juiz na lista de antiguidade da magistratura — o critério que, em regra, desempata quem fica com o lugar disputado.</dd>
+        <dt>Preferência (n.º do pedido)</dt><dd>A posição que o lugar atribuído ocupava na lista de escolhas apresentada pelo juiz: 1.ª preferência = ficou exatamente onde queria.</dd>
+        <dt>Classificação de mérito</dt><dd>A notação das inspeções do CSM: Muito Bom, Bom com Distinção, Bom, Suficiente e Medíocre.</dd>
+      </dl>
+    </section>
   </div>
 
   <footer>
@@ -1335,6 +1394,95 @@
     });
   }
 
+  /* ---------- «A minha comarca» ---------- */
+  var COMARCAS_LISTA = (function () {
+    var s = {};
+    DATA.forEach(function (r) {
+      if (r[DCOM]) s[r[DCOM]] = 1;
+      if (r[OCOM]) s[r[OCOM]] = 1;
+    });
+    var todas = Object.keys(s);
+    return {
+      comarcas: todas.filter(function (c) { return c.indexOf("Relação") !== 0; }).sort(),
+      relacoes: todas.filter(function (c) { return c.indexOf("Relação") === 0; }).sort(),
+    };
+  })();
+  var mcAtual = "Lisboa";
+
+  function renderMinhaComarca() {
+    var C = mcAtual;
+    $("mc-nome").textContent = "· " + C;
+    var entradas = DATA.filter(function (r) { return r[DCOM] === C; });
+    var saidas = DATA.filter(function (r) { return r[OCOM] === C; });
+    var saldoLiq = DATA.filter(function (r) { return r[OCOM] && r[DCOM]; });
+    var inn = saldoLiq.filter(function (r) { return r[DCOM] === C; }).length;
+    var out = saldoLiq.filter(function (r) { return r[OCOM] === C; }).length;
+    var prec = entradas.length ? Math.round(100 * entradas.filter(function (r) { return r[PREC]; }).length / entradas.length) : 0;
+    var prefs = entradas.filter(function (r) { return r[PREF] != null; }).map(function (r) { return r[PREF]; });
+    $("mc-tiles").innerHTML =
+      '<div class="dtile"><b>' + fmt(entradas.length) + "</b><span>juízes colocados aqui (2014–2026)</span></div>" +
+      '<div class="dtile"><b>' + (inn - out > 0 ? "+" : "") + (inn - out) + "</b><span>saldo líquido de entradas e saídas</span></div>" +
+      '<div class="dtile"><b>' + prec + "%</b><span>das colocações são precárias (auxiliar/interino)</span></div>" +
+      '<div class="dtile"><b>' + (prefs.length ? Math.round(median(prefs)) + ".ª" : "—") + "</b><span>preferência mediana de quem cá entra</span></div>";
+
+    // preferência necessária por ano
+    var anosC = ANOS.filter(function (a) {
+      return a >= 2014 && entradas.some(function (r) { return r[ANO] === a && r[PREF] != null; });
+    });
+    renderVBars("mc-pref", anosC.map(function (a) {
+      var ps = entradas.filter(function (r) { return r[ANO] === a && r[PREF] != null; })
+        .map(function (r) { return r[PREF]; }).sort(function (x, y) { return x - y; });
+      var m = Math.round(median(ps));
+      return { l: String(a).slice(2), v: m, txt: m + ".ª",
+        tip: "<b>" + a + "</b><br>preferência mediana: " + m + ".ª<br>melhor: " + ps[0] + ".ª · pior: " + ps[ps.length - 1] + ".ª<br>" + fmt(ps.length) + " colocações" };
+    }));
+
+    // lugares mais rodados
+    var cnt = {};
+    entradas.forEach(function (r) {
+      if (r[ANO] < 2017) return;
+      var parts = r[DST].split(" > ");
+      var i = -1;
+      for (var j = 0; j < parts.length; j++) if (parts[j].indexOf("TJ Comarca") === 0) { i = j; break; }
+      if (i === -1 || parts.length < i + 3 || !/^ju[íi]?z/i.test(parts[i + 2])) return;
+      var k = parts[i + 1] + " · " + parts[i + 2];
+      cnt[k] = (cnt[k] || 0) + 1;
+    });
+    var top = Object.keys(cnt).map(function (k) { return { l: k, v: cnt[k] }; })
+      .sort(function (a, b) { return b.v - a.v; }).slice(0, 5);
+    $("mc-rotacao").innerHTML = top.length ? top.map(function (it) {
+      return '<div class="li-row"><b>' + it.v + "×</b><span>" + esc(it.l) + "</span></div>";
+    }).join("") : '<p class="desc">Sem lugares identificáveis (as Relações têm secções, não lugares numerados).</p>';
+
+    // fluxos de/para
+    function topFluxo(regs, campo, hostId, verbo) {
+      var f = {};
+      regs.forEach(function (r) {
+        var o = r[campo];
+        if (o && o !== C) f[o] = (f[o] || 0) + 1;
+      });
+      var itens = Object.keys(f).map(function (k) { return { l: k, v: f[k] }; })
+        .sort(function (a, b) { return b.v - a.v; }).slice(0, 5);
+      renderHBars(hostId, itens, function (it) {
+        return "<b>" + esc(it.l) + "</b><br>" + fmt(it.v) + " juízes " + verbo;
+      });
+    }
+    topFluxo(entradas, OCOM, "mc-origens", "vieram de lá para " + C);
+    topFluxo(saidas, DCOM, "mc-destinos", "saíram de " + C + " para lá");
+  }
+
+  var selC = $("sel-comarca");
+  selC.innerHTML = '<optgroup label="Comarcas (1.ª instância)">' +
+    COMARCAS_LISTA.comarcas.map(function (c) { return '<option value="' + esc(c) + '">' + esc(c) + "</option>"; }).join("") +
+    '</optgroup><optgroup label="Tribunais da Relação">' +
+    COMARCAS_LISTA.relacoes.map(function (c) { return '<option value="' + esc(c) + '">' + esc(c) + "</option>"; }).join("") +
+    "</optgroup>";
+  selC.addEventListener("change", function () {
+    mcAtual = this.value;
+    hashEscrever();
+    renderMinhaComarca();
+  });
+
   /* ---------- «Em 5 números» (estático) ---------- */
   function renderDestaques() {
     var comPref = DATA.filter(function (r) { return r[PREF] != null; });
@@ -1398,11 +1546,16 @@
       if (state.de > state.ate) { var tmp = state.de; state.de = state.ate; state.ate = tmp; }
     }
     if (h.inst === "0" || h.inst === "1") state.inst = h.inst;
+    if (h.comarca) {
+      var c = decodeURIComponent(h.comarca);
+      if (COMARCAS_LISTA.comarcas.indexOf(c) !== -1 || COMARCAS_LISTA.relacoes.indexOf(c) !== -1) mcAtual = c;
+    }
   }
   function hashEscrever() {
     var partes = [];
     if (state.de) partes.push("de=" + state.de, "ate=" + state.ate);
     if (state.inst !== "") partes.push("inst=" + state.inst);
+    if (mcAtual !== "Lisboa") partes.push("comarca=" + encodeURIComponent(mcAtual));
     var novo = partes.length ? "#" + partes.join("&") : location.pathname + location.search;
     history.replaceState(null, "", partes.length ? novo : novo);
   }
@@ -1865,6 +2018,8 @@
 
   hashLer();
   syncPeriodo();
+  selC.value = mcAtual;
+  renderMinhaComarca();
   document.querySelectorAll(".chip[data-inst]").forEach(function (c) {
     c.setAttribute("aria-pressed", String(c.dataset.inst === state.inst));
   });
