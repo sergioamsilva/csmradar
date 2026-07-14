@@ -44,9 +44,13 @@ Todos os dados provêm de documentos oficiais de acesso público:
    dos registos, validada ano a ano.
 4. **Renovação do sistema.** As entradas e saídas do sistema judicial
    (jubilações e outras cessações, ausentes dos movimentos) são estimadas pela
-   primeira e última aparição de cada juiz na união dos quadros anuais das três
-   instâncias, com nomes normalizados; os anos de fronteira da série são
-   excluídos por serem estruturalmente enviesados.
+   primeira e última aparição de cada juiz na união dos quadros anuais das
+   Relações e da 1.ª instância, com nomes normalizados (STJ excluído por
+   lacunas nos quadros publicados); os anos de fronteira da série são
+   excluídos. A estimativa foi **validada externamente** contra a série de
+   cessações do Relatório Anual do CSM de 2023 (34, 25, 64, 77 e 55 saídas em
+   2019–2023, anos civis): acompanha o padrão, com um excesso de ~20%
+   atribuível a variações de grafia e a saídas temporárias longas.
 5. **Validação.** Totais confrontados com os declarados nos próprios documentos
    quando existentes; distribuições anuais inspecionadas para deteção de
    anomalias; espelho independente de todas as estatísticas apresentadas.
