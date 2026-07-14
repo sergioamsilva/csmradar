@@ -58,6 +58,15 @@ Todos os dados provêm de documentos oficiais de acesso público:
    magistrados: os registos são pseudonimizados na compilação e apenas
    agregados são apresentados, em conformidade com o RGPD.
 
+### Demografia do sistema
+
+Sobre a base de entradas/saídas foram construídos indicadores demográficos:
+balanço anual do sistema, composição por género de quem entra e de quem sai,
+anos de carreira observáveis à saída e até à promoção (valores mínimos, por
+censura à esquerda em 2004), taxa de saída por comarca e projeção de saídas
+até 2030 ao ritmo médio dos últimos cinco anos. Todos os cartões declaram as
+limitações do método.
+
 ## Limitações
 
 - Antes de 2014 vigora o mapa judicial anterior à reorganização (Lei
