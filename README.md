@@ -42,10 +42,15 @@ Todos os dados provêm de documentos oficiais de acesso público:
    documentos («Dr.»/«Dr.ª/Dra.») até 2010 e, nos restantes anos, inferido do
    primeiro nome próprio com listas de exceções; taxa de classificação de 100%
    dos registos, validada ano a ano.
-4. **Validação.** Totais confrontados com os declarados nos próprios documentos
+4. **Renovação do sistema.** As entradas e saídas do sistema judicial
+   (jubilações e outras cessações, ausentes dos movimentos) são estimadas pela
+   primeira e última aparição de cada juiz na união dos quadros anuais das três
+   instâncias, com nomes normalizados; os anos de fronteira da série são
+   excluídos por serem estruturalmente enviesados.
+5. **Validação.** Totais confrontados com os declarados nos próprios documentos
    quando existentes; distribuições anuais inspecionadas para deteção de
    anomalias; espelho independente de todas as estatísticas apresentadas.
-5. **Proteção de dados.** O dashboard publicado não contém nomes de
+6. **Proteção de dados.** O dashboard publicado não contém nomes de
    magistrados: os registos são pseudonimizados na compilação e apenas
    agregados são apresentados, em conformidade com o RGPD.
 
