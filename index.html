@@ -93,7 +93,8 @@
     color: var(--ink);
     font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
   }
-  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px 72px; }
+  .wrap { max-width: none; margin: 0 auto; padding: 0 clamp(20px, 3vw, 64px) 72px; }
+  .masthead .fonte, .card .desc, .sec-band + .card .desc { max-width: 110ch; }
 
   header.masthead {
     padding: 40px 0 20px;
@@ -151,7 +152,7 @@
   .stat span { font-size: 13px; color: var(--ink-2); }
   .stat .sub { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
 
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 8px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(460px, 100%), 1fr)); gap: 20px; margin-top: 8px; }
   .destaques {
     display: grid; grid-template-columns: repeat(5, 1fr); gap: 0;
     border-bottom: 1px solid var(--grid); margin-top: 4px;
@@ -1694,7 +1695,7 @@
           '<span class="pb" style="width:' + (72 * (v || 0) / mx) + '%"></span><span><b>' + (v == null ? "—" : v) + "</b>" + unidade + "</span></div>";
       }
       return '<div class="dtile"><span style="font-weight:700;color:var(--ink)">' + titulo + "</span>" +
-        linha("Pré", vA, unidade) + linha("Pós", vB, unidade) +
+        linha("Pré", vA, "") + linha("Pós", vB, " m") +
         (sub ? '<span class="tag">' + sub + "</span>" : "") + "</div>";
     }
     $("reforma").innerHTML =
