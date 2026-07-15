@@ -9,11 +9,12 @@ Movimentos Judiciais Ordinários (MJO) portugueses entre 2004 e 2026, extraídas
 das versões finais publicadas pelo Conselho Superior da Magistratura (CSM) e,
 para 2009–2010, do Diário da República (2.ª série). O conjunto de dados cobre
 23 movimentos anuais e permite estudar a mobilidade da magistratura judicial em
-quatro dimensões: geográfica (fluxos e saldos entre comarcas, distâncias,
+cinco dimensões: geográfica (fluxos e saldos entre comarcas, distâncias,
 assimetria interior/litoral), de carreira (permanência, promoções, regressos),
 de preferências (grau de satisfação das escolhas dos juízes, atratividade
-relativa das comarcas) e de género (participação feminina nos movimentos e nas
-três instâncias ao longo de duas décadas).
+relativa das comarcas), de género (participação feminina nos movimentos e nas
+três instâncias ao longo de duas décadas) e demográfica (entradas e saídas do
+sistema, balanço com o pipeline de formação e projeção de cessações).
 
 ## Fontes
 
@@ -26,13 +27,17 @@ Todos os dados provêm de documentos oficiais de acesso público:
 - **Quadros anuais de juízes** (STJ, Tribunais da Relação, 1.ª instância,
   quadros complementares), 2014–2026 —
   [`fontes/quadros_fontes.tsv`](fontes/quadros_fontes.tsv).
+- **Validação externa** — série oficial de cessações do Relatório Anual do
+  CSM (2023) e Estudo sobre as necessidades de recrutamento de juízes (CSM,
+  2023) — [`fontes/cej_e_validacao_fontes.tsv`](fontes/cej_e_validacao_fontes.tsv).
 - **Pipeline de formação (CEJ)** — vagas para a magistratura judicial nos
   avisos de abertura dos concursos de ingresso no Centro de Estudos
   Judiciários: Aviso n.º 225/2023 (40.º curso, 52), Aviso n.º 25126/2023
   (41.º, 52), Aviso n.º 7191-B/2025 (42.º, 75) e Aviso n.º 1435-A/2026
   (43.º, 79). O desfasamento aviso→colocação (~3 anos) foi calibrado com os
   cursos 34.º (48 vagas em 2018 → 42 colocações no MJO 2021) e 40.º (52 vagas
-  em 2023 → 56 colocações no MJO 2026).
+  em 2023 → 56 colocações no MJO 2026) —
+  [`fontes/cej_e_validacao_fontes.tsv`](fontes/cej_e_validacao_fontes.tsv).
 
 ## Metodologia
 
@@ -70,9 +75,11 @@ Todos os dados provêm de documentos oficiais de acesso público:
 Sobre a base de entradas/saídas foram construídos indicadores demográficos:
 balanço anual do sistema, composição por género de quem entra e de quem sai,
 anos de carreira observáveis à saída e até à promoção (valores mínimos, por
-censura à esquerda em 2004), taxa de saída por comarca e projeção de saídas
-até 2030 ao ritmo médio dos últimos cinco anos. Todos os cartões declaram as
-limitações do método.
+censura à esquerda em 2004), taxa de saída por comarca, correlação entre as
+saídas e as colocações de primeiro acesso do movimento seguinte, e projeção de
+saídas até 2030 ao ritmo médio dos últimos cinco anos, confrontada com as
+entradas já garantidas pelo pipeline de formação do CEJ. Todos os cartões
+declaram as limitações do método.
 
 ## Limitações
 
@@ -103,6 +110,12 @@ build_db.py        construção da base de dados SQLite
 build_mapa.py      projeção cartográfica (distritos e sedes de comarca)
 build_dashboard.py agregação e geração do dashboard (template.html)
 ```
+
+## Atualização
+
+Última extração de dados: julho de 2026 (inclui a versão consolidada do MJO
+de 2026 e o 43.º concurso de ingresso no CEJ). O conjunto atualiza-se a cada
+Movimento Judicial Ordinário.
 
 ## Citação sugerida
 
