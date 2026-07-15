@@ -26,6 +26,13 @@ Todos os dados provêm de documentos oficiais de acesso público:
 - **Quadros anuais de juízes** (STJ, Tribunais da Relação, 1.ª instância,
   quadros complementares), 2014–2026 —
   [`fontes/quadros_fontes.tsv`](fontes/quadros_fontes.tsv).
+- **Pipeline de formação (CEJ)** — vagas para a magistratura judicial nos
+  avisos de abertura dos concursos de ingresso no Centro de Estudos
+  Judiciários: Aviso n.º 225/2023 (40.º curso, 52), Aviso n.º 25126/2023
+  (41.º, 52), Aviso n.º 7191-B/2025 (42.º, 75) e Aviso n.º 1435-A/2026
+  (43.º, 79). O desfasamento aviso→colocação (~3 anos) foi calibrado com os
+  cursos 34.º (48 vagas em 2018 → 42 colocações no MJO 2021) e 40.º (52 vagas
+  em 2023 → 56 colocações no MJO 2026).
 
 ## Metodologia
 
