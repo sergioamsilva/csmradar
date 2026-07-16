@@ -1,6 +1,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Observatório dos movimentos judiciais em Portugal, 2004–2026: análise de 12 747 colocações de juízes a partir das divulgações oficiais do Conselho Superior da Magistratura e do Diário da República.">
+<meta property="og:title" content="csmRadar · Movimentos Judiciais em Portugal, 2004–2026">
+<meta property="og:description" content="12 747 colocações de juízes em 23 anos: fluxos entre comarcas, preferências, carreira e género, a partir dos documentos oficiais do CSM e do Diário da República.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://sergioamsilva.github.io/csmradar/">
+<meta property="og:image" content="https://sergioamsilva.github.io/csmradar/og.png">
+<meta name="twitter:card" content="summary_large_image">
 <title>csmRadar · Movimentos Judiciais 2004–2026</title>
 <style>
   :root {
@@ -85,7 +91,8 @@
     color: var(--ink);
     font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
   }
-  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px 72px; }
+  .wrap { max-width: none; margin: 0 auto; padding: 0 clamp(20px, 3vw, 64px) 72px; }
+  .card .desc { max-width: 110ch; }
 
   header.masthead {
     padding: 40px 0 20px;
@@ -143,7 +150,69 @@
   .stat span { font-size: 13px; color: var(--ink-2); }
   .stat .sub { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
 
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 8px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(460px, 100%), 1fr)); gap: 20px; margin-top: 8px; }
+  .destaques {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 0;
+    border-bottom: 1px solid var(--grid); margin-top: 4px;
+  }
+  .dest {
+    display: block; padding: 22px 18px 18px 0; position: relative;
+    text-decoration: none; color: inherit;
+  }
+  .dest + .dest { padding-left: 18px; border-left: 1px solid var(--grid); }
+  .dest .rule { position: absolute; top: 0; left: 0; height: 2px; width: 0; background: var(--accent); }
+  .js .dest.on .rule { width: 34px; transition: width .9s cubic-bezier(.2,.7,.2,1) .2s; }
+  html:not(.js) .dest .rule, .no-motion .dest .rule { width: 34px; }
+  .dest b { display: block; font-size: 30px; font-weight: 750; letter-spacing: -0.02em; line-height: 1.15; }
+  .odo { display: inline-block; overflow: hidden; height: 1.15em; vertical-align: bottom; }
+  .odo-col { display: block; transition: transform 1.2s cubic-bezier(.2,.85,.25,1); }
+  .odo-col span { display: block; height: 1.15em; line-height: 1.15; }
+  .dest b small { font-size: 15px; font-weight: 650; color: var(--ink-2); }
+  .dest > span { font-size: 12.5px; color: var(--ink-2); display: block; margin-top: 3px; }
+  .dest .seta { color: var(--accent); font-weight: 700; opacity: 0; transition: opacity .2s; }
+  .dest:hover .seta { opacity: 1; }
+  .dest:hover b { color: var(--accent); }
+  @media (max-width: 900px) {
+    .destaques { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; }
+    .dest { flex: 0 0 72%; scroll-snap-align: start; }
+  }
+  .card { position: relative; }
+  .mc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; margin-top: 18px; }
+  .mc-grid h3 { margin: 0 0 4px; font-size: 14px; font-weight: 700; }
+  .mc-grid .desc { margin-bottom: 12px; }
+  #sel-comarca {
+    font: 650 15px system-ui, sans-serif; color: var(--ink);
+    background: var(--page); border: 1px solid var(--baseline);
+    border-radius: 9px; padding: 10px 12px; min-width: 260px; cursor: pointer;
+  }
+  .glossario { display: grid; grid-template-columns: 220px 1fr; gap: 0 28px; margin: 0; }
+  .glossario dt { font-weight: 700; font-size: 13.5px; padding: 12px 0 0; border-top: 1px solid var(--grid); }
+  .glossario dd { margin: 0; padding: 12px 0 12px; border-top: 1px solid var(--grid); font-size: 13px; color: var(--ink-2); }
+  .glossario dt:first-of-type, .glossario dd:first-of-type { border-top: none; }
+  @media (max-width: 900px) { .mc-grid, .glossario { grid-template-columns: 1fr; } }
+  .baixar {
+    position: absolute; top: 14px; right: 14px; z-index: 2;
+    width: 30px; height: 30px; border-radius: 8px; cursor: pointer;
+    border: 1px solid var(--baseline); background: var(--surface); color: var(--ink-2);
+    font: 700 14px/1 system-ui, sans-serif; opacity: 0; transition: opacity .2s;
+  }
+  .card:hover .baixar, .baixar:focus-visible { opacity: 1; }
+  .baixar:hover { color: var(--accent); border-color: var(--accent); }
+  @property --ang { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+  @keyframes moldura-roda { to { --ang: 360deg; } }
+  .card::before {
+    content: ""; position: absolute; inset: -1px; border-radius: 15px;
+    padding: 1.5px; pointer-events: none; opacity: 0; transition: opacity .4s;
+    background: conic-gradient(from var(--ang),
+      transparent 0 78%, color-mix(in srgb, var(--accent) 65%, transparent) 89%, transparent 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+  }
+  @media (hover: hover) {
+    .js:not(.no-motion) .card:hover::before { opacity: 1; animation: moldura-roda 3.2s linear infinite; }
+  }
+  @media (hover: none) { .baixar { opacity: 0.6; } }
   .sec-band {
     grid-column: 1 / -1; display: flex; align-items: baseline; gap: 14px;
     padding: 30px 0 0; scroll-margin-top: 16px;
@@ -154,9 +223,57 @@
   }
   .sec-band .ln { flex: 1; height: 1px; background: var(--grid); }
   .sec-band .n { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
-  .anchors { display: flex; flex-wrap: wrap; gap: 4px 18px; padding: 10px 0; border-bottom: 1px solid var(--grid); font-size: 12.5px; }
-  .anchors a { color: var(--ink-2); text-decoration: none; border-bottom: 1px solid transparent; }
-  .anchors a:hover { color: var(--accent); border-bottom-color: var(--accent-soft); }
+  .anchors {
+    position: sticky; top: 0; z-index: 6;
+    display: flex; flex-wrap: nowrap; gap: 2px; align-items: center;
+    overflow-x: auto; scrollbar-width: none;
+    padding: 8px clamp(20px, 3vw, 64px); margin: 0 calc(-1 * clamp(20px, 3vw, 64px));
+    border-bottom: 1px solid var(--grid);
+    background: color-mix(in srgb, var(--page) 86%, transparent);
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    font-size: 12.5px;
+  }
+  .anchors::-webkit-scrollbar { display: none; }
+  .anchors a {
+    color: var(--ink-2); text-decoration: none; white-space: nowrap;
+    padding: 6px 11px; border-radius: 999px; border: 1px solid transparent;
+  }
+  .anchors a:hover { color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, transparent); }
+  .anchors a.ativo { color: var(--accent); font-weight: 700; background: color-mix(in srgb, var(--accent) 11%, transparent); }
+  .sec-band { scroll-margin-top: 64px; }
+  #topo {
+    position: fixed; right: 22px; bottom: 22px; z-index: 7;
+    width: 42px; height: 42px; border-radius: 50%;
+    border: 1px solid var(--baseline); background: var(--surface); color: var(--ink-2);
+    font: 700 17px/1 system-ui, sans-serif; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0,0,0,.14);
+    opacity: 0; pointer-events: none; transform: translateY(8px);
+    transition: opacity .25s, transform .25s;
+  }
+  #topo.visivel { opacity: 1; pointer-events: auto; transform: none; }
+  #apres {
+    position: fixed; inset: 0; z-index: 60; display: none;
+    background: var(--page); color: var(--ink);
+    flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 6vh 8vw;
+  }
+  #apres.aberta { display: flex; }
+  #apres .a-kicker { font-size: 12px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-2); }
+  #apres .a-num { font-size: clamp(72px, 17vw, 240px); font-weight: 800; letter-spacing: -0.03em; line-height: 1; margin: 2vh 0; font-variant-numeric: tabular-nums; }
+  #apres .a-num small { font-size: 0.35em; font-weight: 700; color: var(--accent); }
+  #apres .a-frase { font-size: clamp(17px, 2.4vw, 28px); color: var(--ink-2); max-width: 28ch; text-wrap: balance; margin: 0 auto; }
+  #apres .a-rodape { position: absolute; bottom: 4vh; left: 0; right: 0; display: flex; justify-content: center; gap: 26px; font-size: 13px; color: var(--muted); }
+  #apres .a-seta {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    width: 46px; height: 46px; border-radius: 50%; cursor: pointer;
+    border: 1px solid var(--baseline); background: var(--surface); color: var(--ink-2);
+    font: 700 18px/1 system-ui, sans-serif;
+  }
+  #apres .a-seta:hover { color: var(--accent); border-color: var(--accent); }
+  #apres .a-ant { left: 3vw; } #apres .a-prox { right: 3vw; }
+  #apres .a-fechar { position: absolute; top: 20px; right: 24px; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--baseline); background: var(--surface); color: var(--ink-2); font: 700 16px/1 system-ui, sans-serif; cursor: pointer; }
+  .js:not(.no-motion) #apres .a-slide { animation: fadein .45s ease; }
+  #topo:hover { color: var(--accent); border-color: var(--accent); }
   html { scroll-behavior: smooth; }
   .no-motion html, html.no-motion { scroll-behavior: auto; }
   .lista .li-row {
@@ -264,14 +381,20 @@
   .flow-link { fill: none; stroke: var(--accent); opacity: 0.42; cursor: pointer; }
   .flow-link.hot { opacity: 0.95; }
   .flow-link.dim { opacity: 0.08; }
-  @keyframes flowdash { to { stroke-dashoffset: -24; } }
+  @keyframes flowdash { to { stroke-dashoffset: -132; } }
   .flow-anim {
-    fill: none; stroke: var(--accent-soft); stroke-dasharray: 3 9;
-    opacity: 0.9; pointer-events: none;
+    fill: none; stroke: var(--accent-soft); stroke-dasharray: 12 120;
+    stroke-linecap: round; opacity: 0.95; pointer-events: none;
     animation: flowdash 1.2s linear infinite;
   }
-  .flow-anim.dim { opacity: 0.05; }
-  .no-motion .flow-anim, html:not(.js) .flow-anim { display: none; }
+  .flow-tail {
+    fill: none; stroke: var(--accent-soft); stroke-dasharray: 30 102;
+    stroke-linecap: round; opacity: 0.28; pointer-events: none;
+    animation: flowdash 1.2s linear infinite;
+  }
+  .flow-anim.dim, .flow-tail.dim { opacity: 0.04; }
+  .no-motion .flow-anim, html:not(.js) .flow-anim,
+  .no-motion .flow-tail, html:not(.js) .flow-tail { display: none; }
   .flow-node { stroke: var(--surface); stroke-width: 2px; fill: var(--accent); }
 
   .srch {
@@ -310,6 +433,7 @@
   .mapa-svg .bolha.pos { fill: var(--accent); }
   .mapa-svg .bolha.neg { fill: var(--neg); }
   .mapa-svg .bolha.zero { fill: var(--baseline); }
+  .mapa-svg .bolha.alt { fill: var(--cat2); }
   .mapa-svg .bolha:hover { opacity: 1; }
   .js .mapa-svg .bolha { transition: r .5s ease, opacity .3s; }
   @keyframes radarping {
@@ -322,9 +446,41 @@
     animation: radarping 2.4s ease-out infinite;
   }
   .no-motion .ping, html:not(.js) .ping { display: none; }
+  .metricas { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+  .metricas .chip { padding: 5px 10px; font-size: 12px; }
+  .heat { border-collapse: collapse; font-size: 10.5px; }
+  .heat th { font-weight: 600; color: var(--muted); padding: 2px 4px; text-align: right; white-space: nowrap; }
+  .heat thead th { writing-mode: vertical-rl; transform: rotate(180deg); text-align: left; vertical-align: bottom; padding: 4px 0; }
+  .heat td { width: 26px; height: 22px; text-align: center; border: 1px solid var(--surface); border-radius: 4px; color: var(--ink-2); cursor: default; }
+  .heat td:hover { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .heat-wrap { overflow-x: auto; }
+  .escada td { width: 52px; }
+  .lorenz-svg { width: 100%; max-width: 460px; height: auto; display: block; }
+  .lorenz-svg .eixo { stroke: var(--grid); }
+  .lorenz-svg .diag { stroke: var(--baseline); stroke-dasharray: 4 3; }
+  .lorenz-svg .curva { stroke: var(--accent); stroke-width: 2.25; fill: none; stroke-linecap: round; }
+  .lorenz-svg .area-l { fill: var(--accent); opacity: .12; }
+  .lorenz-svg text { font: 10.5px system-ui, sans-serif; fill: var(--muted); }
+  .mapa-svg { will-change: transform; transition: transform .25s ease-out; }
+  @keyframes terra-draw { to { stroke-dashoffset: 0; } }
+  @keyframes terra-fill { to { fill-opacity: 1; } }
+  @keyframes bolha-pop {
+    0% { transform: scale(0); opacity: 0; }
+    70% { transform: scale(1.18); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .js:not(.no-motion) .mapa-svg.cine .terra {
+    fill-opacity: 0; stroke-dasharray: 1; stroke-dashoffset: 1;
+    animation: terra-draw 1.3s ease-out forwards, terra-fill .7s ease 1.1s forwards;
+  }
+  .js:not(.no-motion) .mapa-svg.cine .bolha {
+    transform-box: fill-box; transform-origin: center;
+    animation: bolha-pop .55s cubic-bezier(.34,1.56,.64,1) backwards;
+  }
   .mapa-legenda { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 10px; font-size: 12px; color: var(--ink-2); }
   .mapa-legenda .sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
   .lin-svg { width: 100%; height: auto; display: block; }
+  .card.full .lin-svg { max-width: 780px; margin: 0 auto; }
   .lin-svg text { font: 11.5px system-ui, sans-serif; fill: var(--ink-2); }
   .lin-svg .tick { font-size: 10.5px; fill: var(--muted); }
   .lin-svg .gridln { stroke: var(--grid); stroke-width: 1; }
@@ -372,7 +528,22 @@
     .evo { gap: 5px; height: 190px; }
     .evo .num { font-size: 10px; }
     .evo .yl { font-size: 9.5px; }
+    #gargalo-grid { grid-template-columns: 1fr !important; }
+    #idades-grid { grid-template-columns: 1fr !important; }
+    #idades-tiles { grid-template-columns: 1fr 1fr !important; }
   }
+  .minih { margin: 0 0 10px; font-size: 13px; font-weight: 700; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.04em; }
+  .pir-row { display: grid; grid-template-columns: 1fr 56px 1fr; align-items: center; gap: 6px; margin: 5px 0; }
+  .pir-lbl { text-align: center; font-size: 11.5px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  .pir-f, .pir-m { display: flex; align-items: center; gap: 6px; min-height: 20px; }
+  .pir-f { justify-content: flex-end; }
+  .pir-bar { height: 18px; border-radius: 3px; transition: width 0.6s ease; }
+  .pir-f .pir-bar { background: var(--accent); }
+  .pir-m .pir-bar { background: var(--cat2); }
+  .pir-num { font-size: 11px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  .pir-head { display: grid; grid-template-columns: 1fr 56px 1fr; font-size: 11.5px; font-weight: 700; margin-bottom: 6px; }
+  .pir-head span:first-child { text-align: right; color: var(--accent); }
+  .pir-head span:last-child { color: var(--cat2); }
   @media (prefers-reduced-motion: reduce) {
     * { animation: none !important; transition: none !important; }
   }
@@ -387,7 +558,7 @@
     <p class="fonte">
       Fonte: versões finais dos Movimentos Judiciais Ordinários publicadas pelo
       <a href="https://csm.org.pt/juizes/movimentos-judiciais/" target="_blank" rel="noopener">Conselho Superior da Magistratura</a>
-      e no Diário da República. 12 734 colocações extraídas de 23 anos de documentos oficiais.
+      e no Diário da República. 12 747 colocações extraídas de 23 anos de documentos oficiais.
     </p>
   </header>
 
@@ -408,10 +579,13 @@
   </nav>
 
   <nav class="anchors" aria-label="Secções da página">
-    <a href="#sec-panorama">Panorama</a><a href="#sec-geografia">Geografia</a><a href="#sec-colocacoes">Colocações</a><a href="#sec-carreira">Carreira</a><a href="#sec-genero">Género</a><a href="#sec-sistema">Sistema</a>
+    <a href="#sec-panorama">Panorama</a><a href="#sec-geografia">Geografia</a><a href="#sec-colocacoes">Colocações</a><a href="#sec-carreira">Carreira</a><a href="#sec-comarca">A minha comarca</a><a href="#sec-genero">Género</a><a href="#sec-sistema">Sistema</a><a href="#sec-glossario">Glossário</a>
+    <button class="chip" id="btn-apres" style="margin-left:auto" title="Ver as conclusões em ecrã inteiro">▶ Apresentação</button>
   </nav>
 
   <section class="stats" id="stats" aria-label="Indicadores principais"></section>
+
+  <section class="destaques" id="destaques" aria-label="Cinco conclusões em números"></section>
 
   <div class="grid">
     <div class="sec-band" id="sec-panorama"><h2>Panorama</h2><span class="ln"></span></div>
@@ -436,7 +610,8 @@
     <div class="sec-band" id="sec-geografia"><h2>Geografia</h2><span class="ln"></span></div>
     <section class="card reveal">
       <h2>Mapa das comarcas</h2>
-      <p class="desc">Tamanho da bolha = juízes movimentados (entradas + saídas); cor = saldo (azul ganha, vermelho perde). Apenas movimentos com origem e destino identificados.</p>
+      <p class="desc">Tamanho da bolha = volume de colocações; a cor depende da métrica escolhida (legenda abaixo do mapa). Passar o rato para os valores de cada comarca.</p>
+      <div class="metricas" id="mapa-metricas" role="tablist" aria-label="Métrica do mapa"></div>
       <div id="mapa"></div>
       <div class="mapa-legenda"><span><span class="sw" style="background:var(--accent)"></span>ganha juízes</span><span><span class="sw" style="background:var(--neg)"></span>perde juízes</span><span><span class="sw" style="background:var(--baseline)"></span>equilíbrio</span></div>
     </section>
@@ -459,6 +634,12 @@
       <p class="desc">Distância em linha reta entre as sedes das comarcas de origem e destino, mediana anual entre quem muda de comarca (comarcas identificáveis a partir de 2014).</p>
       <div id="km"></div>
       <div class="duo" id="km-tiles"></div>
+    </section>
+
+    <section class="card full reveal">
+      <h2>Matriz de rotas: todas as comarcas</h2>
+      <p class="desc">Cada célula é o número de juízes que foi da comarca da linha para a comarca da coluna (a diagonal são os movimentos dentro da própria comarca). Comparar células simétricas revela as assimetrias — quem dá e quem recebe. Respeita os filtros; dados desde 2014.</p>
+      <div class="heat-wrap" id="heat-od"></div>
     </section>
 
     <div class="sec-band" id="sec-colocacoes"><h2>Colocações</h2><span class="ln"></span></div>
@@ -505,6 +686,25 @@
       <div id="merito"></div>
     </section>
 
+    <section class="card reveal">
+      <h2>As preferências ao longo de 23 anos</h2>
+      <p class="desc">Mediana anual da preferência obtida (linha) e banda entre o 1.º e o 3.º quartil (área): metade dos juízes fica dentro da banda. Banda estreita e baixa = movimentos que satisfazem; larga = sorte muito repartida.</p>
+      <div id="banda-pref"></div>
+    </section>
+
+    <section class="card reveal">
+      <h2>A rotação concentra-se em poucos lugares</h2>
+      <p class="desc">Curva de concentração (Lorenz) das colocações por lugar concreto desde 2017 — quanto mais curvada, mais a rotação se concentra nos mesmos lugares.</p>
+      <div id="lorenz"></div>
+      <div class="duo" id="lorenz-tiles"></div>
+    </section>
+
+    <section class="card full reveal">
+      <h2>A armadilha da precariedade</h2>
+      <p class="desc">Seguindo o mesmo juiz entre movimentos consecutivos (2004–2026): quem está colocado como auxiliar/interino consegue sair da precariedade no movimento seguinte? Ignora os filtros.</p>
+      <div class="duo" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))" id="armadilha"></div>
+    </section>
+
     <section class="card full reveal">
       <h2>Colocações precárias por comarca</h2>
       <p class="desc">Percentagem de colocações em vaga de auxiliar, interinas ou por destacamento/renovação — proxy da instabilidade do quadro em cada comarca (mín. 30 colocações).</p>
@@ -527,9 +727,50 @@
     </section>
 
     <section class="card reveal">
+      <h2>Quantos anos de carreira tem quem sai</h2>
+      <p class="desc">Anos de carreira <b>observáveis</b> (desde 2004) de quem saiu do sistema entre 2016 e 2024 — valores mínimos, porque quem já era juiz antes de 2004 só é visto a partir daí. O grupo «15–19» é sobretudo gente que já cá estava antes de 2004.</p>
+      <div id="csaida"></div>
+      <div class="duo" id="csaida-tiles"></div>
+    </section>
+
+    <section class="card full reveal">
+      <h2>A escada da carreira: de que juízo se salta para onde</h2>
+      <p class="desc">Matriz de transição entre tipos de juízo, em movimentos consecutivos do mesmo juiz (2014–2026): cada linha mostra para onde vão os juízes que estavam nesse tipo de juízo (percentagens por linha; células mais escuras = destino mais frequente). A diagonal é a permanência no mesmo tipo. Ignora os filtros.</p>
+      <div class="heat-wrap" id="escada"></div>
+    </section>
+
+    <section class="card reveal">
       <h2>Regressos</h2>
       <p class="desc">Dos juízes que mudaram de comarca mais do que uma vez, quantos voltaram a uma comarca onde já tinham estado.</p>
       <div class="duo" id="regressos"></div>
+    </section>
+
+    <div class="sec-band" id="sec-comarca"><h2>A minha comarca</h2><span class="ln"></span></div>
+    <section class="card full reveal">
+      <h2>Relatório local <span class="thin" id="mc-nome"></span></h2>
+      <p class="desc">Escolha uma comarca (ou uma Relação) para ver a sua realidade: rotação, precariedade, com que preferência se consegue lá entrar, e de onde vêm e para onde vão os juízes. Dados de 2014–2026 (mapa judicial atual); independente dos filtros globais. Partilhável por link.</p>
+      <select id="sel-comarca" aria-label="Escolher comarca"></select>
+      <div class="duo" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))" id="mc-tiles"></div>
+      <div class="mc-grid">
+        <div>
+          <h3>Com que preferência se entra</h3>
+          <p class="desc">Mediana anual da posição, na lista de escolhas dos juízes colocados, que este destino ocupava. Barra baixa = é preciso pô-la nas primeiras escolhas.</p>
+          <div id="mc-pref"></div>
+        </div>
+        <div>
+          <h3>Lugares que mais mudaram de juiz (desde 2017)</h3>
+          <p class="desc">Os lugares concretos com mais colocações — onde a rotação é maior.</p>
+          <div class="lista" id="mc-rotacao"></div>
+        </div>
+        <div>
+          <h3>De onde vêm</h3>
+          <div id="mc-origens"></div>
+        </div>
+        <div>
+          <h3>Para onde vão</h3>
+          <div id="mc-destinos"></div>
+        </div>
+      </div>
     </section>
 
     <div class="sec-band" id="sec-genero"><h2>Género</h2><span class="ln"></span></div>
@@ -546,6 +787,12 @@
     </section>
 
     <section class="card full reveal">
+      <h2>Quem entra vs. quem sai: o motor da feminização</h2>
+      <p class="desc">Percentagem de mulheres entre quem entra no sistema e entre quem sai, por ano judicial. As coortes que saem (mais antigas) são mais masculinas do que as que entram — a feminização é, em grande parte, substituição geracional. Pontos com menos de 10 casos omitidos.</p>
+      <div id="renovgen"></div>
+    </section>
+
+    <section class="card full reveal">
       <h2>Equidade nas colocações</h2>
       <p class="desc">Comparação direta entre juízas e juízes no resultado do movimento (respeita os filtros).</p>
       <div class="duo" id="equidade"></div>
@@ -559,14 +806,88 @@
     </section>
 
     <section class="card full reveal">
-      <h2>Renovação do corpo de juízes</h2>
-      <p class="desc">Quadros anuais da 1.ª instância: dimensão do corpo, entradas (nomes novos face ao ano anterior) e saídas (nomes que desaparecem no ano seguinte). À direita, juízes da Relação e do STJ em comissão de serviço. Não é afetado pelos filtros.</p>
+      <h2>Entradas e saídas do sistema judicial</h2>
+      <p class="desc">Renovação do sistema (Relações + 1.ª instância, a partir dos quadros anuais de juízes): uma entrada é a primeira aparição de um juiz em qualquer quadro; uma saída é a última — jubilações, aposentações e outras cessações, que os movimentos não mostram. Estimativa por correspondência de nomes, em anos judiciais (setembro a setembro); STJ excluído por falhas nos quadros publicados. Não é afetado pelos filtros.</p>
       <div style="display:grid;grid-template-columns:2fr 1fr;gap:24px;align-items:end" id="renovacao-grid">
         <div id="renovacao"></div>
         <div class="duo" style="grid-template-columns:1fr" id="renovacao-tiles"></div>
       </div>
+      <p class="desc" id="renovacao-nota" style="margin:14px 0 0"></p>
     </section>
 
+    <section class="card reveal">
+      <h2>O balanço: entram menos do que saem</h2>
+      <p class="desc">Médias anuais de entradas e saídas do sistema (Relações + 1.ª instância), o saldo acumulado, e o <b>pipeline do CEJ</b>: as vagas judiciais dos cursos já abertos, que chegam ao sistema ~3 anos depois do aviso (calibrado com os cursos 34.º e 40.º).</p>
+      <div class="duo" style="grid-template-columns:1fr" id="balanco"></div>
+      <p class="desc" id="balanco-nota" style="margin:12px 0 0"></p>
+    </section>
+
+    <section class="card reveal">
+      <h2>Onde mais se sai</h2>
+      <p class="desc">Taxa média anual de saídas do sistema por comarca (última comarca conhecida de quem saiu ÷ dimensão média do quadro local; mín. 3 saídas). Amostras pequenas — leitura indicativa.</p>
+      <div id="saidascomarca"></div>
+    </section>
+
+    <section class="card reveal">
+      <h2>O eco das jubilações</h2>
+      <p class="desc" id="eco-desc">Saídas do sistema em cada ano judicial e colocações de 1.º acesso no movimento do ano seguinte — as ondas de jubilações abrem as vagas dos novos juízes.</p>
+      <div id="eco"></div>
+    </section>
+
+    <section class="card full reveal">
+      <h2>Que idade têm os juízes?</h2>
+      <p class="desc">O CSM não publica idades, mas a <a href="https://csm.org.pt/juizes/listas-de-antiguidade/" target="_blank" rel="noopener">lista de antiguidade</a> (31-12-2025) dá o tempo de serviço de cada um dos 1941 magistrados judiciais no ativo. Estimamos a idade somando-lhe a idade típica de nomeação da época de ingresso: ~26 anos no início dos anos 80 (autocalibrada pelo limite de idade dos 70) até ~34 hoje (os auditores do CEJ entram aos ~31, mais dois anos de curso), com interpolação entre épocas. Incerteza de ±3–4 anos por pessoa; 15 conselheiros de entrada lateral (MP e juristas) ficam de fora; só agregados. Não é afetado pelos filtros.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start" id="idades-grid">
+        <div>
+          <h3 class="minih">Pirâmide etária estimada, por género</h3>
+          <div id="piramide"></div>
+        </div>
+        <div>
+          <h3 class="minih">O relógio das aposentações: quantos chegam aos 66 e aos 70, por ano</h3>
+          <div id="relogio"></div>
+        </div>
+      </div>
+      <div class="duo" style="grid-template-columns:repeat(4,1fr)" id="idades-tiles"></div>
+      <p class="desc" id="idades-nota" style="margin:14px 0 0"></p>
+    </section>
+
+    <section class="card full reveal">
+      <h2>O gargalo do STJ</h2>
+      <p class="desc">Em 2025 o regime de acesso ao Supremo mudou: passou a ser convocado o <b>terço</b> superior da lista de antiguidade dos desembargadores (antes, um quarto), e o 18.º Concurso Curricular graduou 141 candidatos para as vagas de março de 2026 a agosto de 2028 — um período invulgarmente curto. Os 17 conselheiros empossados a 9 de julho de 2026 formam a fornada mais jovem de que há registo: a maioria só atingirá a idade da aposentação (66) ou o limite de 70 anos já na década de 2030, sem libertar a cadeira até lá. O modelo abaixo simula as vagas anuais no STJ: 70 cadeiras (quadro de 2023), coorte instalada com 61–70 anos no início de 2026 (calibrada com as posses observadas), novos conselheiros a entrar aos ~58. <b>Cenário A</b>: saída à idade da aposentação; <b>cenário B</b>: retenção até ao limite de 70 anos. A lista de antiguidade de 2025 valida a coorte instalada: os conselheiros de carreira tinham então, estimados, 66 ou mais anos (cartão acima). É um modelo ilustrativo de cenários, não uma previsão. Não é afetado pelos filtros.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:end" id="gargalo-grid">
+        <div id="gargalo"></div>
+        <div class="duo" id="gargalo-tiles"></div>
+      </div>
+      <p class="desc" id="gargalo-nota" style="margin:14px 0 0"></p>
+    </section>
+
+    <section class="card reveal">
+      <h2>Projeção: saídas até 2030</h2>
+      <p class="desc">Antiguidade observável (desde 2004) dos juízes hoje no ativo, e a projeção de saídas ao ritmo médio dos últimos cinco anos. Estimativa conservadora: as coortes «15–19» e «20+» incluem quem já era juiz antes de 2004. Atenção ao viés recém-identificado: se os desembargadores adiarem a jubilação por causa do gargalo do STJ (cartão acima), o ritmo histórico sobrestima as saídas dos próximos anos — e o relógio das aposentações aponta um vale demográfico em 2027–28 no mesmo sentido.</p>
+      <div id="projecao"></div>
+      <div class="duo" id="projecao-tiles"></div>
+    </section>
+
+    <div class="sec-band" id="sec-glossario"><h2>Glossário</h2><span class="ln"></span></div>
+    <section class="card full reveal">
+      <h2>Os termos, para quem não é jurista</h2>
+      <dl class="glossario">
+        <dt>Movimento Judicial Ordinário (MJO)</dt><dd>O processo anual, conduzido pelo Conselho Superior da Magistratura (CSM), que coloca, transfere e promove os juízes — normalmente decidido em julho, com efeitos em setembro.</dd>
+        <dt>Comarca</dt><dd>A circunscrição territorial dos tribunais de 1.ª instância. Desde a reforma de 2014 existem 23, grosso modo uma por distrito (Lisboa e Porto estão subdivididas).</dd>
+        <dt>Tribunal da Relação</dt><dd>A 2.ª instância, que julga recursos: Lisboa, Porto, Coimbra, Évora e Guimarães. Os seus juízes (desembargadores) chegam por promoção, através de concurso curricular.</dd>
+        <dt>Supremo Tribunal de Justiça (STJ)</dt><dd>O topo da hierarquia dos tribunais judiciais (juízes conselheiros).</dd>
+        <dt>Acesso final / primeiro acesso</dt><dd>Secções do movimento: os juízes já efetivos que concorrem entre si, e os recém-formados do Centro de Estudos Judiciários na sua primeira colocação.</dd>
+        <dt>Lugar de efetivo / auxiliar</dt><dd>O titular do lugar, com estabilidade, por oposição ao juiz colocado temporariamente como reforço ou substituto.</dd>
+        <dt>Quadro complementar («bolsa»)</dt><dd>Juízes sem lugar fixo, afetados pelo CSM onde há faltas — uma bolsa por área de Relação.</dd>
+        <dt>Comissão de serviço</dt><dd>Período em que o juiz exerce funções fora dos tribunais (no CSM, no CEJ, em instituições europeias…), mantendo o vínculo.</dd>
+        <dt>Destacamento / interinidade</dt><dd>Colocações temporárias num lugar que não é o próprio, frequentemente renovadas ano a ano.</dd>
+        <dt>Antiguidade</dt><dd>A posição do juiz na lista de antiguidade da magistratura — o critério que, em regra, desempata quem fica com o lugar disputado.</dd>
+        <dt>Preferência (n.º do pedido)</dt><dd>A posição que o lugar atribuído ocupava na lista de escolhas apresentada pelo juiz: 1.ª preferência = ficou exatamente onde queria.</dd>
+        <dt>Classificação de mérito</dt><dd>A notação das inspeções do CSM: Muito Bom, Bom com Distinção, Bom, Suficiente e Medíocre.</dd>
+        <dt>Concurso curricular de acesso ao STJ</dt><dd>O concurso que seleciona os juízes conselheiros: são convocados os desembargadores do terço superior da lista de antiguidade (um quarto, até à reforma de 2025), a par de candidatos do Ministério Público e juristas de mérito, graduados por avaliação curricular.</dd>
+        <dt>Jubilação / aposentação</dt><dd>Formas de cessação de funções dos magistrados: a aposentação a partir da idade legal de reforma (~66 anos); a jubilação, o estatuto especial em que o magistrado mantém o título e certos deveres. O limite de idade para o exercício de funções é 70 anos.</dd>
+      </dl>
+    </section>
   </div>
 
   <footer>
@@ -576,6 +897,14 @@
 </div>
 
 <div id="tip" role="status"></div>
+<button id="topo" aria-label="Voltar ao topo" title="Voltar ao topo">↑</button>
+<div id="apres" role="dialog" aria-modal="true" aria-label="Apresentação das conclusões">
+  <button class="a-fechar" aria-label="Fechar">✕</button>
+  <button class="a-seta a-ant" aria-label="Anterior">‹</button>
+  <div class="a-slide" id="apres-slide"></div>
+  <button class="a-seta a-prox" aria-label="Seguinte">›</button>
+  <div class="a-rodape"><span id="apres-pos"></span><span>← → navegar · Esc fechar</span></div>
+</div>
 
 <script id="mjo-data" type="application/json">__DATA_JSON__</script>
 <script>
@@ -731,6 +1060,7 @@
     if (!xs.length) { $(hostId).innerHTML = '<p class="desc">Sem dados neste filtro.</p>'; return; }
     var ys = [];
     series.forEach(function (s) { s.pts.forEach(function (pt) { ys.push(pt.y); }); });
+    if (cfg.banda) cfg.banda.forEach(function (b) { ys.push(b.lo, b.hi); });
     var yMin = cfg.yMin != null ? cfg.yMin : Math.min(0, Math.min.apply(null, ys));
     var yMax = cfg.yMax != null ? cfg.yMax : (Math.max.apply(null, ys) || 1) * 1.12;
     if (yMax === yMin) yMax = yMin + 1;
@@ -765,6 +1095,11 @@
     if (cfg.ref != null) {
       svg += '<line class="gridln g50" x1="' + mL + '" x2="' + (W - mR) + '" y1="' + y(cfg.ref) + '" y2="' + y(cfg.ref) + '"></line>';
     }
+    if (cfg.banda && cfg.banda.length > 1) {
+      var topo = cfg.banda.map(function (b) { return x(b.x).toFixed(1) + "," + y(b.hi).toFixed(1); });
+      var base = cfg.banda.slice().reverse().map(function (b) { return x(b.x).toFixed(1) + "," + y(b.lo).toFixed(1); });
+      svg += '<polygon points="' + topo.concat(base).join(" ") + '" fill="var(--accent)" opacity="0.13"></polygon>';
+    }
     var xstep = Math.ceil(xs.length / 7);
     xs.forEach(function (a, i) {
       if (i % xstep === 0) svg += '<text class="tick" x="' + x(a) + '" y="' + (H - 8) + '" text-anchor="middle">' + a + "</text>";
@@ -782,7 +1117,7 @@
       var y0 = y(Math.max(yMin, Math.min(0, cfg.ref != null ? cfg.ref : yMin)));
       runs.forEach(function (rn) {
         var P = rn.map(function (pt) { return [+x(pt.x).toFixed(1), +y(pt.y).toFixed(1)]; });
-        var dline = suave(P);
+        var dline = cfg.reta ? "M" + P.map(function (q) { return q[0] + " " + q[1]; }).join("L") : suave(P);
         if (P.length > 1) {
           svg += '<path class="area" d="' + dline + "L" + P[P.length - 1][0] + " " + y0.toFixed(1) +
             "L" + P[0][0] + " " + y0.toFixed(1) + 'Z" fill="url(#lg-' + gid + si + ')"></path>';
@@ -885,6 +1220,7 @@
           if (state.de === a && state.ate === a) { state.de = 0; state.ate = 0; }
           else { state.de = a; state.ate = a; }
           syncPeriodo();
+          hashEscrever();
           renderAll(false);
         });
         bindTip(col, function () {
@@ -1130,9 +1466,11 @@
         '" d="' + ds[i] + '"></path>';
     });
     flows.forEach(function (f, i) {
-      var dur = (1.7 - 0.9 * f.v / maxV).toFixed(2);
-      var delay = -((i * 0.37) % 1.7).toFixed(2);
-      svg += '<path class="flow-anim" aria-hidden="true" stroke-width="' + Math.max(1.4, sw(f.v) * 0.35).toFixed(1) +
+      var dur = +(1.7 - 0.9 * f.v / maxV).toFixed(2);
+      var delay = -+((i * 0.37) % 1.7).toFixed(2);
+      svg += '<path class="flow-tail" aria-hidden="true" stroke-width="' + Math.max(2.2, sw(f.v) * 0.55).toFixed(1) +
+        '" style="animation-duration:' + dur + 's;animation-delay:' + (delay + dur * 0.045).toFixed(2) + 's" d="' + ds[i] + '"></path>' +
+        '<path class="flow-anim" aria-hidden="true" stroke-width="' + Math.max(1.4, sw(f.v) * 0.35).toFixed(1) +
         '" style="animation-duration:' + dur + 's;animation-delay:' + delay + 's" d="' + ds[i] + '"></path>';
     });
     left.forEach(function (n) {
@@ -1150,11 +1488,13 @@
 
     var links = host.querySelectorAll(".flow-link");
     var anims = host.querySelectorAll(".flow-anim");
+    var tails = host.querySelectorAll(".flow-tail");
     function setHot(idx) {
       for (var j = 0; j < links.length; j++) {
         links[j].classList.toggle("hot", j === idx);
         links[j].classList.toggle("dim", idx !== -1 && j !== idx);
         if (anims[j]) anims[j].classList.toggle("dim", idx !== -1 && j !== idx);
+        if (tails[j]) tails[j].classList.toggle("dim", idx !== -1 && j !== idx);
       }
     }
     flows.forEach(function (f, i) {
@@ -1169,13 +1509,64 @@
   }
 
   /* ---------- mapa das comarcas ---------- */
+  var LEGENDAS_MAPA = {
+    saldo: ['<span><span class="sw" style="background:var(--accent)"></span>ganha juízes</span><span><span class="sw" style="background:var(--neg)"></span>perde juízes</span><span><span class="sw" style="background:var(--baseline)"></span>equilíbrio</span>'],
+    prec: ['<span><span class="sw" style="background:var(--neg)"></span>mais precária que a média</span><span><span class="sw" style="background:var(--accent)"></span>menos precária</span>'],
+    antig: ['<span><span class="sw" style="background:var(--accent)"></span>colocados mais veteranos</span><span><span class="sw" style="background:var(--cat2)"></span>mais novatos</span>'],
+    mulheres: ['<span><span class="sw" style="background:var(--accent)"></span>% de juízas acima da média</span><span><span class="sw" style="background:var(--cat2)"></span>abaixo da média</span>'],
+    atrat: ['<span><span class="sw" style="background:var(--accent)"></span>disputada (preferências baixas)</span><span><span class="sw" style="background:var(--neg)"></span>último recurso</span>'],
+  };
   function renderMapa() {
     var d = filtered(), agg = {};
-    d.forEach(function (r) {
-      if (!r[OCOM] || !r[DCOM]) return;
-      agg[r[OCOM]] = agg[r[OCOM]] || { in: 0, out: 0 }; agg[r[OCOM]].out++;
-      agg[r[DCOM]] = agg[r[DCOM]] || { in: 0, out: 0 }; agg[r[DCOM]].in++;
-    });
+    var mm = state.mm || "saldo";
+    if (mm === "saldo") {
+      d.forEach(function (r) {
+        if (!r[OCOM] || !r[DCOM]) return;
+        agg[r[OCOM]] = agg[r[OCOM]] || { in: 0, out: 0 }; agg[r[OCOM]].out++;
+        agg[r[DCOM]] = agg[r[DCOM]] || { in: 0, out: 0 }; agg[r[DCOM]].in++;
+      });
+    } else {
+      var porC = {};
+      d.forEach(function (r) {
+        if (r[DCOM]) (porC[r[DCOM]] = porC[r[DCOM]] || []).push(r);
+      });
+      var nacional = {
+        prec: 100 * d.filter(function (r) { return r[PREC]; }).length / (d.length || 1),
+        antig: median(d.filter(function (r) { return r[ANT] != null; }).map(function (r) { return r[ANT]; })) || 0,
+        mulheres: (function () {
+          var g = d.filter(function (r) { return r[GEN]; });
+          return 100 * g.filter(function (r) { return r[GEN] === "F"; }).length / (g.length || 1);
+        })(),
+        atrat: median(d.filter(function (r) { return r[PREF] != null; }).map(function (r) { return r[PREF]; })) || 0,
+      };
+      Object.keys(porC).forEach(function (n) {
+        var g = porC[n], v = null, cls = "zero", tip = "";
+        if (mm === "prec") {
+          v = 100 * g.filter(function (r) { return r[PREC]; }).length / g.length;
+          cls = v > nacional.prec + 3 ? "neg" : v < nacional.prec - 3 ? "pos" : "zero";
+          tip = Math.round(v) + "% de colocações precárias (média nacional " + Math.round(nacional.prec) + "%)";
+        } else if (mm === "antig") {
+          var ants = g.filter(function (r) { return r[ANT] != null; }).map(function (r) { return r[ANT]; });
+          if (ants.length < 15) return;
+          v = median(ants);
+          cls = v < nacional.antig * 0.85 ? "pos" : v > nacional.antig * 1.15 ? "alt" : "zero";
+          tip = "antiguidade mediana dos colocados: " + Math.round(v) + ".º (nacional " + Math.round(nacional.antig) + ".º; número alto = mais novato)";
+        } else if (mm === "mulheres") {
+          var gg = g.filter(function (r) { return r[GEN]; });
+          if (gg.length < 15) return;
+          v = 100 * gg.filter(function (r) { return r[GEN] === "F"; }).length / gg.length;
+          cls = v > nacional.mulheres + 4 ? "pos" : v < nacional.mulheres - 4 ? "alt" : "zero";
+          tip = Math.round(v) + "% de juízas colocadas (média " + Math.round(nacional.mulheres) + "%)";
+        } else if (mm === "atrat") {
+          var ps = g.filter(function (r) { return r[PREF] != null; }).map(function (r) { return r[PREF]; });
+          if (ps.length < 15) return;
+          v = median(ps);
+          cls = v <= nacional.atrat * 0.6 ? "pos" : v >= nacional.atrat * 1.6 ? "neg" : "zero";
+          tip = "preferência mediana de preenchimento: " + Math.round(v) + ".ª (nacional " + Math.round(nacional.atrat) + ".ª)";
+        }
+        agg[n] = { in: g.length, out: 0, v: v, cls: cls, tip: tip };
+      });
+    }
     var pontos = {};
     Object.keys(MAPA.sedes).forEach(function (n) { pontos[n] = MAPA.sedes[n]; });
     Object.keys(MAPA.relacoes).forEach(function (n) { pontos[n] = [MAPA.relacoes[n][0] + 9, MAPA.relacoes[n][1] - 6]; });
@@ -1186,34 +1577,38 @@
     var host = $("mapa");
     host.__agg = agg;
     host.__pontos = pontos;
+    host.__mm = mm;
     var lista0 = Object.keys(pontos).filter(function (n) { return agg[n]; });
-    var key = lista0.slice().sort().join("|");
+    var key = mm + "|" + lista0.slice().sort().join("|");
     if (host.__key === key) {
       var bs = host.querySelectorAll(".bolha");
       for (var bi = 0; bi < bs.length; bi++) {
         var nm = bs[bi].dataset.n, a2 = agg[nm];
         var vol2 = a2.in + a2.out, s2 = a2.in - a2.out;
         bs[bi].style.r = (2.5 + 17 * Math.sqrt(vol2 / maxVol)) + "px";
-        bs[bi].setAttribute("class", "bolha " + (s2 > 0 ? "pos" : s2 < 0 ? "neg" : "zero"));
+        bs[bi].setAttribute("class", "bolha " + (a2.cls || (s2 > 0 ? "pos" : s2 < 0 ? "neg" : "zero")));
       }
       setPing(host);
       return;
     }
     host.__key = key;
-    var svg = '<svg class="mapa-svg" viewBox="0 0 ' + MAPA.w + " " + MAPA.h + '" role="img" aria-label="Mapa de Portugal com saldo de juízes por comarca">';
+    var svg = '<svg class="mapa-svg' + (!renderMapa.__cineFeito ? " cine" : "") + '" viewBox="0 0 ' + MAPA.w + " " + MAPA.h + '" role="img" aria-label="Mapa de Portugal com saldo de juízes por comarca">';
     MAPA.insets.forEach(function (b) {
       svg += '<rect class="inset" x="' + b.x + '" y="' + b.y + '" width="' + b.w + '" height="' + b.h + '" rx="4"></rect>' +
         '<text class="inset-lbl" x="' + (b.x + 5) + '" y="' + (b.y + 12) + '">' + b.label + "</text>";
     });
-    MAPA.paths.forEach(function (pth) { svg += '<path class="terra" d="' + pth.d + '"></path>'; });
+    MAPA.paths.forEach(function (pth) { svg += '<path class="terra" pathLength="1" d="' + pth.d + '"></path>'; });
     var lista = Object.keys(pontos).filter(function (n) { return agg[n]; })
       .sort(function (a, b) { return (agg[b].in + agg[b].out) - (agg[a].in + agg[a].out); });
     // desenhar por ordem decrescente de volume para os pequenos ficarem por cima
-    lista.forEach(function (n) {
+    var cine = !renderMapa.__cineFeito;
+    lista.forEach(function (n, bi) {
       var a = agg[n], vol = a.in + a.out, saldo = a.in - a.out;
       var r = 2.5 + 17 * Math.sqrt(vol / maxVol);
-      var cls = saldo > 0 ? "pos" : saldo < 0 ? "neg" : "zero";
-      svg += '<circle class="bolha ' + cls + '" data-n="' + esc(n) + '" cx="' + pontos[n][0] + '" cy="' + pontos[n][1] + '" r="' + r.toFixed(1) + '"></circle>';
+      var cls = a.cls || (saldo > 0 ? "pos" : saldo < 0 ? "neg" : "zero");
+      svg += '<circle class="bolha ' + cls + '" data-n="' + esc(n) +
+        (cine ? '" style="animation-delay:' + (1.15 + bi * 0.045).toFixed(2) + 's' : "") +
+        '" cx="' + pontos[n][0] + '" cy="' + pontos[n][1] + '" r="' + r.toFixed(1) + '"></circle>';
     });
     svg += "</svg>";
     host.innerHTML = svg;
@@ -1223,18 +1618,28 @@
         var n = el.dataset.n;
         bindTip(el, function () {
           var a = host.__agg[n];
+          if (a.tip) return "<b>" + esc(n) + "</b><br>" + a.tip + "<br>" + fmt(a.in) + " colocações";
           var saldo = a.in - a.out;
           return "<b>" + esc(n) + "</b><br>Entradas: <b>" + a.in + "</b> · Saídas: <b>" + a.out +
             "</b><br>Saldo: <b>" + (saldo > 0 ? "+" : "") + saldo + "</b>";
         });
       })(bolhas[i]);
     }
+    document.querySelector(".mapa-legenda").innerHTML = LEGENDAS_MAPA[mm][0];
     setPing(host);
+    if (!renderMapa.__cineFeito) {
+      renderMapa.__cineFeito = true;
+      setTimeout(function () {
+        var s = host.querySelector("svg");
+        if (s) s.classList.remove("cine");
+      }, 3500);
+    }
   }
 
   function setPing(host) {
     var old = host.querySelector(".ping");
     if (old) old.remove();
+    if (host.__mm && host.__mm !== "saldo") return;
     var agg = host.__agg, pontos = host.__pontos, best = null;
     Object.keys(agg).forEach(function (n) {
       if (!pontos[n]) return;
@@ -1292,6 +1697,277 @@
     });
   }
 
+  /* ---------- «A minha comarca» ---------- */
+  var COMARCAS_LISTA = (function () {
+    var s = {};
+    DATA.forEach(function (r) {
+      if (r[DCOM]) s[r[DCOM]] = 1;
+      if (r[OCOM]) s[r[OCOM]] = 1;
+    });
+    var todas = Object.keys(s);
+    return {
+      comarcas: todas.filter(function (c) { return c.indexOf("Relação") !== 0; }).sort(),
+      relacoes: todas.filter(function (c) { return c.indexOf("Relação") === 0; }).sort(),
+    };
+  })();
+  var mcAtual = "Lisboa";
+
+  function renderMinhaComarca() {
+    var C = mcAtual;
+    $("mc-nome").textContent = "· " + C;
+    var entradas = DATA.filter(function (r) { return r[DCOM] === C; });
+    var saidas = DATA.filter(function (r) { return r[OCOM] === C; });
+    var saldoLiq = DATA.filter(function (r) { return r[OCOM] && r[DCOM]; });
+    var inn = saldoLiq.filter(function (r) { return r[DCOM] === C; }).length;
+    var out = saldoLiq.filter(function (r) { return r[OCOM] === C; }).length;
+    var prec = entradas.length ? Math.round(100 * entradas.filter(function (r) { return r[PREC]; }).length / entradas.length) : 0;
+    var prefs = entradas.filter(function (r) { return r[PREF] != null; }).map(function (r) { return r[PREF]; });
+    var sc = (PAYLOAD.saidasComarca || []).filter(function (s) { return s[0] === C; })[0];
+    $("mc-tiles").innerHTML =
+      (sc ? '<div class="dtile"><b>' + fmt(sc[1]) + "</b><span>saídas do sistema a partir daqui (2016–2024)</span></div>" : "") +
+      '<div class="dtile"><b>' + fmt(entradas.length) + "</b><span>juízes colocados aqui (2014–2026)</span></div>" +
+      '<div class="dtile"><b>' + (inn - out > 0 ? "+" : "") + (inn - out) + "</b><span>saldo líquido de entradas e saídas</span></div>" +
+      '<div class="dtile"><b>' + prec + "%</b><span>das colocações são precárias (auxiliar/interino)</span></div>" +
+      '<div class="dtile"><b>' + (prefs.length ? Math.round(median(prefs)) + ".ª" : "—") + "</b><span>preferência mediana de quem cá entra</span></div>";
+
+    // preferência necessária por ano
+    var anosC = ANOS.filter(function (a) {
+      return a >= 2014 && entradas.some(function (r) { return r[ANO] === a && r[PREF] != null; });
+    });
+    renderVBars("mc-pref", anosC.map(function (a) {
+      var ps = entradas.filter(function (r) { return r[ANO] === a && r[PREF] != null; })
+        .map(function (r) { return r[PREF]; }).sort(function (x, y) { return x - y; });
+      var m = Math.round(median(ps));
+      return { l: String(a).slice(2), v: m, txt: m + ".ª",
+        tip: "<b>" + a + "</b><br>preferência mediana: " + m + ".ª<br>melhor: " + ps[0] + ".ª · pior: " + ps[ps.length - 1] + ".ª<br>" + fmt(ps.length) + " colocações" };
+    }));
+
+    // lugares mais rodados
+    var cnt = {};
+    entradas.forEach(function (r) {
+      if (r[ANO] < 2017) return;
+      var parts = r[DST].split(" > ");
+      var i = -1;
+      for (var j = 0; j < parts.length; j++) if (parts[j].indexOf("TJ Comarca") === 0) { i = j; break; }
+      if (i === -1 || parts.length < i + 3 || !/^ju[íi]?z/i.test(parts[i + 2])) return;
+      var k = parts[i + 1] + " · " + parts[i + 2];
+      cnt[k] = (cnt[k] || 0) + 1;
+    });
+    var top = Object.keys(cnt).map(function (k) { return { l: k, v: cnt[k] }; })
+      .sort(function (a, b) { return b.v - a.v; }).slice(0, 5);
+    $("mc-rotacao").innerHTML = top.length ? top.map(function (it) {
+      return '<div class="li-row"><b>' + it.v + "×</b><span>" + esc(it.l) + "</span></div>";
+    }).join("") : '<p class="desc">Sem lugares identificáveis (as Relações têm secções, não lugares numerados).</p>';
+
+    // fluxos de/para
+    function topFluxo(regs, campo, hostId, verbo) {
+      var f = {};
+      regs.forEach(function (r) {
+        var o = r[campo];
+        if (o && o !== C) f[o] = (f[o] || 0) + 1;
+      });
+      var itens = Object.keys(f).map(function (k) { return { l: k, v: f[k] }; })
+        .sort(function (a, b) { return b.v - a.v; }).slice(0, 5);
+      renderHBars(hostId, itens, function (it) {
+        return "<b>" + esc(it.l) + "</b><br>" + fmt(it.v) + " juízes " + verbo;
+      });
+    }
+    topFluxo(entradas, OCOM, "mc-origens", "vieram de lá para " + C);
+    topFluxo(saidas, DCOM, "mc-destinos", "saíram de " + C + " para lá");
+  }
+
+  var selC = $("sel-comarca");
+  selC.innerHTML = '<optgroup label="Comarcas (1.ª instância)">' +
+    COMARCAS_LISTA.comarcas.map(function (c) { return '<option value="' + esc(c) + '">' + esc(c) + "</option>"; }).join("") +
+    '</optgroup><optgroup label="Tribunais da Relação">' +
+    COMARCAS_LISTA.relacoes.map(function (c) { return '<option value="' + esc(c) + '">' + esc(c) + "</option>"; }).join("") +
+    "</optgroup>";
+  selC.addEventListener("change", function () {
+    mcAtual = this.value;
+    hashEscrever();
+    renderMinhaComarca();
+  });
+
+  /* ---------- «Em 5 números» (estático) ---------- */
+  function renderDestaques() {
+    var comPref = DATA.filter(function (r) { return r[PREF] != null; });
+    var p1 = Math.round(100 * comPref.filter(function (r) { return r[PREF] === 1; }).length / comPref.length);
+
+    var cnt = {};
+    DATA.forEach(function (r) {
+      if (r[ANO] < 2017 || !r[DCOM]) return;
+      var parts = r[DST].split(" > ");
+      var i = -1;
+      for (var j = 0; j < parts.length; j++) if (parts[j].indexOf("TJ Comarca") === 0) { i = j; break; }
+      if (i === -1 || parts.length < i + 3 || !/^ju[íi]?z/i.test(parts[i + 2])) return;
+      var k = parts[i + 1] + " · " + parts[i + 2];
+      cnt[k] = (cnt[k] || 0) + 1;
+    });
+    var topLugar = Object.keys(cnt).sort(function (a, b) { return cnt[b] - cnt[a]; })[0] || "";
+    var topLugarCurto = topLugar.split(" · ")[0].replace(/Juízo de competência genérica (de |da |do )?/i, "");
+
+    function medPref(g) {
+      return Math.round(median(DATA.filter(function (r) { return r[GEN] === g && r[PREF] != null; })
+        .map(function (r) { return r[PREF]; })) || 0);
+    }
+    var stj = QGEN.filter(function (q) { return q[1] === "STJ"; });
+    var stj0 = stj[0], stj1 = stj[stj.length - 1];
+
+    var rotas = {};
+    DATA.forEach(function (r) {
+      if (r[OCOM] && r[DCOM] && r[OCOM] !== r[DCOM] && r[DCOM].indexOf("Relação") !== 0 && r[OCOM].indexOf("Relação") !== 0) {
+        var k = r[OCOM] + " → " + r[DCOM];
+        rotas[k] = (rotas[k] || 0) + 1;
+      }
+    });
+    var topRota = Object.keys(rotas).sort(function (a, b) { return rotas[b] - rotas[a]; })[0] || "";
+
+    var itens = [
+      { v: p1, suf: "%", fr: "dos juízes ficam na sua 1.ª preferência", a: "#sec-colocacoes" },
+      { v: cnt[topLugar] || 0, suf: "×", fr: topLugarCurto + " mudou de juiz desde 2017 — um por ano", a: "#sec-colocacoes" },
+      { v: medPref("F"), suf: ".ª vs " + medPref("M") + ".ª", fr: "preferência mediana das juízas vs juízes", a: "#sec-genero" },
+      { v: stj1 ? Math.round(100 * stj1[3] / stj1[2]) : 0, suf: "%", fr: "de mulheres no STJ (eram " + (stj0 ? Math.round(100 * stj0[3] / stj0[2]) : 0) + "% em " + (stj0 ? stj0[0] : "") + ")", a: "#sec-genero" },
+      { v: rotas[topRota] || 0, suf: "", fr: topRota + ": a rota mais percorrida", a: "#sec-panorama" },
+    ];
+    renderDestaques.__itens = itens;
+    $("destaques").innerHTML = itens.map(function (it) {
+      return '<a class="dest reveal" href="' + it.a + '"><span class="rule"></span>' +
+        '<b><span class="odo-alvo">' + fmt(it.v) + "</span><small>" + it.suf + "</small></b>" +
+        "<span>" + esc(it.fr) + ' <span class="seta">→</span></span></a>';
+    }).join("");
+    var els = $("destaques").querySelectorAll(".dest");
+    for (var i = 0; i < els.length; i++) {
+      els[i].classList.add("on");
+      odometro(els[i].querySelector(".odo-alvo"), fmt(itens[i].v));
+    }
+  }
+
+  /* dígitos que rolam como contador mecânico */
+  function odometro(el, texto) {
+    if (RM) { el.textContent = texto; return; }
+    el.textContent = "";
+    var digitos = 0;
+    String(texto).split("").forEach(function (ch) {
+      if (!/[0-9]/.test(ch)) {
+        el.appendChild(document.createTextNode(ch));
+        return;
+      }
+      var caixa = document.createElement("span");
+      caixa.className = "odo";
+      var col = document.createElement("span");
+      col.className = "odo-col";
+      for (var n = 0; n <= 9; n++) {
+        var c = document.createElement("span");
+        c.textContent = n;
+        col.appendChild(c);
+      }
+      caixa.appendChild(col);
+      el.appendChild(caixa);
+      (function (colRef, alvo, ordem) {
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            colRef.style.transitionDelay = 0.15 + ordem * 0.14 + "s";
+            colRef.style.transform = "translateY(-" + alvo * 1.15 + "em)";
+          });
+        });
+      })(col, +ch, digitos);
+      digitos++;
+    });
+  }
+
+  /* ---------- estado na URL ---------- */
+  function hashLer() {
+    var h = {};
+    location.hash.replace(/^#/, "").split("&").forEach(function (par) {
+      var kv = par.split("=");
+      if (kv[0]) h[kv[0]] = kv[1];
+    });
+    if (h.de || h.ate) {
+      state.de = Math.max(ANOS[0], +h.de || ANOS[0]);
+      state.ate = Math.min(ANOS[ANOS.length - 1], +h.ate || ANOS[ANOS.length - 1]);
+      if (state.de > state.ate) { var tmp = state.de; state.de = state.ate; state.ate = tmp; }
+    }
+    if (h.inst === "0" || h.inst === "1") state.inst = h.inst;
+    if (h.comarca) {
+      var c = decodeURIComponent(h.comarca);
+      if (COMARCAS_LISTA.comarcas.indexOf(c) !== -1 || COMARCAS_LISTA.relacoes.indexOf(c) !== -1) mcAtual = c;
+    }
+  }
+  function hashEscrever() {
+    var partes = [];
+    if (state.de) partes.push("de=" + state.de, "ate=" + state.ate);
+    if (state.inst !== "") partes.push("inst=" + state.inst);
+    if (mcAtual !== "Lisboa") partes.push("comarca=" + encodeURIComponent(mcAtual));
+    var novo = partes.length ? "#" + partes.join("&") : location.pathname + location.search;
+    history.replaceState(null, "", partes.length ? novo : novo);
+  }
+
+  /* ---------- descarregar cartão em PNG ---------- */
+  var CSS_PNG = ["color", "background", "background-color", "background-image", "border", "border-radius",
+    "font", "font-size", "font-weight", "font-family", "letter-spacing", "line-height", "text-transform",
+    "display", "position", "top", "left", "right", "bottom", "width", "height", "min-width", "max-width",
+    "margin", "padding", "gap", "grid-template-columns", "flex", "flex-direction", "flex-wrap",
+    "align-items", "justify-content", "text-align", "white-space", "overflow", "text-overflow",
+    "border-left", "border-top", "border-bottom", "opacity", "stroke", "stroke-width", "fill",
+    "stroke-dasharray", "transform", "transform-origin", "box-shadow", "font-variant-numeric"];
+  function inlinar(orig, clone) {
+    var co = getComputedStyle(orig);
+    CSS_PNG.forEach(function (prop) {
+      try { clone.style.setProperty(prop, co.getPropertyValue(prop)); } catch (e) {}
+    });
+    for (var i = 0; i < orig.children.length; i++) {
+      if (clone.children[i]) inlinar(orig.children[i], clone.children[i]);
+    }
+  }
+  function baixarCartao(card) {
+    var clone = card.cloneNode(true);
+    var lixo = clone.querySelectorAll(".baixar, .more");
+    for (var i = 0; i < lixo.length; i++) lixo[i].remove();
+    inlinar(card, clone);
+    var rod = document.createElement("div");
+    rod.textContent = "csmRadar · sergioamsilva.github.io/csmradar";
+    rod.style.cssText = "margin-top:14px;padding-top:10px;border-top:1px solid #e1e0d9;font:11px system-ui;color:#898781";
+    clone.appendChild(rod);
+    var w = card.offsetWidth, h = card.offsetHeight + 44;
+    clone.style.width = w + "px";
+    var xml = new XMLSerializer().serializeToString(clone);
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '">' +
+      '<foreignObject width="100%" height="100%"><div xmlns="http://www.w3.org/1999/xhtml">' + xml + "</div></foreignObject></svg>";
+    var img = new Image();
+    img.onload = function () {
+      try {
+        var cv = document.createElement("canvas");
+        cv.width = w * 2;
+        cv.height = h * 2;
+        var cx = cv.getContext("2d");
+        cx.scale(2, 2);
+        cx.drawImage(img, 0, 0);
+        cv.toBlob(function (blob) {
+          if (!blob) return;
+          var a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          var nome = (card.querySelector("h2") || {}).textContent || "grafico";
+          a.download = "csmradar-" + fold(nome).replace(/[^a-z0-9]+/g, "-").slice(0, 40) + ".png";
+          a.click();
+          setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+          window.__pngOk = true;
+        }, "image/png");
+      } catch (e) { window.__pngErro = String(e); }
+    };
+    img.onerror = function () { window.__pngErro = "imagem"; };
+    img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+  }
+  document.querySelectorAll(".card").forEach(function (card) {
+    if (!card.querySelector("h2")) return;
+    var btn = document.createElement("button");
+    btn.className = "baixar";
+    btn.textContent = "↓";
+    btn.title = "Descarregar este gráfico (PNG)";
+    btn.setAttribute("aria-label", "Descarregar este gráfico como imagem");
+    btn.addEventListener("click", function () { baixarCartao(card); });
+    card.appendChild(btn);
+  });
+
   /* ---------- antes/depois da reforma (estático) ---------- */
   function renderReforma() {
     var pre = DATA.filter(function (r) { return r[ANO] < 2014; });
@@ -1317,7 +1993,7 @@
           '<span class="pb" style="width:' + (72 * (v || 0) / mx) + '%"></span><span><b>' + (v == null ? "—" : v) + "</b>" + unidade + "</span></div>";
       }
       return '<div class="dtile"><span style="font-weight:700;color:var(--ink)">' + titulo + "</span>" +
-        linha("Pré", vA, unidade) + linha("Pós", vB, unidade) +
+        linha("Pré", vA, "") + linha("Pós", vB, " m") +
         (sub ? '<span class="tag">' + sub + "</span>" : "") + "</div>";
     }
     $("reforma").innerHTML =
@@ -1576,7 +2252,9 @@
     var anos = QREN.map(function (q) { return q[0]; });
     var maxV = 1;
     QREN.forEach(function (q) { maxV = Math.max(maxV, q[2] || 0, q[3] || 0); });
-    $("renovacao").innerHTML = '<div class="mirror">' + QREN.map(function (q) {
+    $("renovacao").innerHTML = '<div class="mirror">' + QREN.filter(function (q) {
+      return q[2] != null || q[3] != null;
+    }).map(function (q) {
       var hUp = q[2] != null ? Math.max(100 * q[2] / maxV, 1) : 0;
       var hDn = q[3] != null ? Math.max(100 * q[3] / maxV, 1) : 0;
       return '<div class="mcol" data-a="' + q[0] + '"><div class="up"><span class="mbar" style="height:' + hUp + '%"></span></div>' +
@@ -1590,16 +2268,315 @@
     $("renovacao").querySelectorAll(".mcol").forEach(function (el) {
       var q = info[+el.dataset.a];
       bindTip(el, function () {
-        return "<b>" + q[0] + "</b><br>corpo: " + fmt(q[1]) + " juízes" +
+        return "<b>" + q[0] + "</b><br>sistema: " + fmt(q[1]) + " juízes" +
           (q[2] != null ? "<br>entradas: " + fmt(q[2]) : "") +
-          (q[3] != null ? "<br>saídas: " + fmt(q[3]) : "");
+          (q[3] != null ? "<br>saídas (última aparição): " + fmt(q[3]) : "");
       });
     });
     var ultimo = QREN[QREN.length - 1];
+    var saidasVal = QREN.map(function (q) { return q[3]; }).filter(function (v) { return v != null; });
     var com = COMS.length ? COMS[COMS.length - 1] : null;
     $("renovacao-tiles").innerHTML =
-      '<div class="dtile"><b>' + fmt(ultimo[1]) + "</b><span>juízes no quadro da 1.ª instância em " + ultimo[0] + "</span></div>" +
+      '<div class="dtile"><b>' + fmt(ultimo[1]) + "</b><span>juízes no sistema em " + ultimo[0] + " (Relações + 1.ª instância)</span></div>" +
+      '<div class="dtile"><b>~' + Math.round(saidasVal.reduce(function (s, v) { return s + v; }, 0) / saidasVal.length) + "/ano</b><span>saídas do sistema (jubilações e outras), média " + "2016–2024</span></div>" +
       (com ? '<div class="dtile"><b>' + fmt(com[1]) + "</b><span>juízes da Relação/STJ em comissão de serviço (" + com[0] + ")</span></div>" : "");
+    var nota = $("renovacao-nota");
+    if (nota && PAYLOAD.saidasOficiais) {
+      var of = PAYLOAD.saidasOficiais;
+      var somaOf = of.reduce(function (s, q) { return s + q[1]; }, 0);
+      nota.innerHTML = "<b>Validação externa:</b> o Relatório Anual do CSM regista, por ano civil, " +
+        of.map(function (q) { return q[1] + " (" + q[0] + ")"; }).join(" · ") +
+        " cessações — " + fmt(somaOf) + " em 2019–2023. A estimativa acima, medida em anos judiciais, acompanha o padrão (pico em 2021) com um excesso de ~20%, explicado por variações de grafia dos nomes entre quadros e por saídas temporárias longas.";
+    }
+  }
+
+  /* ---------- heatmap origem→destino ---------- */
+  function renderHeatOD() {
+    var d = filtered().filter(function (r) {
+      return r[OCOM] && r[DCOM] && r[OCOM].indexOf("Relação") !== 0 && r[DCOM].indexOf("Relação") !== 0;
+    });
+    var comarcas = {};
+    d.forEach(function (r) { comarcas[r[OCOM]] = 1; comarcas[r[DCOM]] = 1; });
+    var lista = Object.keys(comarcas).sort();
+    if (lista.length < 3) { $("heat-od").innerHTML = '<p class="desc">Sem dados suficientes neste filtro.</p>'; return; }
+    var m = {}, mx = 1;
+    d.forEach(function (r) {
+      var k = r[OCOM] + "|" + r[DCOM];
+      m[k] = (m[k] || 0) + 1;
+      if (r[OCOM] !== r[DCOM]) mx = Math.max(mx, m[k]);
+    });
+    var html = '<table class="heat"><thead><tr><th></th>' + lista.map(function (c) {
+      return "<th>" + esc(c) + "</th>";
+    }).join("") + "</tr></thead><tbody>";
+    lista.forEach(function (o) {
+      html += "<tr><th>" + esc(o) + "</th>" + lista.map(function (dd) {
+        var v = m[o + "|" + dd] || 0;
+        var alpha = v ? Math.round(10 + 55 * Math.log(v + 1) / Math.log(mx + 1)) : 0;
+        var tt = o + " → " + dd + ": " + v + (o !== dd && (m[dd + "|" + o] || 0) ? " · inverso: " + m[dd + "|" + o] : "") + (o === dd ? " (internos)" : "");
+        return '<td title="' + esc(tt) + '" style="background:color-mix(in srgb, var(--accent) ' + alpha + '%, transparent)' +
+          (o === dd ? ";outline:1px solid var(--baseline);outline-offset:-1px" : "") + '">' + (v || "") + "</td>";
+      }).join("") + "</tr>";
+    });
+    $("heat-od").innerHTML = html + "</tbody></table>";
+  }
+
+  /* ---------- banda interquartil das preferências ---------- */
+  function renderBandaPref() {
+    var d = instFiltered().filter(function (r) { return r[PREF] != null; });
+    var banda = [], pts = [];
+    ANOS.forEach(function (a) {
+      var ps = d.filter(function (r) { return r[ANO] === a; }).map(function (r) { return r[PREF]; })
+        .sort(function (x, y) { return x - y; });
+      if (ps.length < 30) return;
+      function q(f) { return ps[Math.floor(f * (ps.length - 1))]; }
+      banda.push({ x: a, lo: q(0.25), hi: q(0.75) });
+      pts.push({ x: a, y: q(0.5), tip: "<b>" + a + "</b><br>mediana: " + q(0.5) + ".ª<br>1.º quartil: " + q(0.25) + ".ª · 3.º quartil: " + q(0.75) + ".ª<br>" + fmt(ps.length) + " colocações" });
+    });
+    lineChart("banda-pref", [{ k: "Mediana", c: "var(--accent)", pts: pts }],
+      { yMin: 0, banda: banda, yFmt: function (v) { return v + ".ª"; }, endFmt: function (pt) { return pt.y + ".ª"; } });
+  }
+
+  /* ---------- Lorenz / concentração da rotação ---------- */
+  function renderLorenz() {
+    var cnt = {};
+    DATA.forEach(function (r) {
+      if (r[ANO] < 2017 || !r[DCOM]) return;
+      var parts = r[DST].split(" > ");
+      var i = -1;
+      for (var j = 0; j < parts.length; j++) if (parts[j].indexOf("TJ Comarca") === 0) { i = j; break; }
+      if (i === -1 || parts.length < i + 3 || !/^ju[íi]?z/i.test(parts[i + 2])) return;
+      var k = r[DCOM] + "·" + parts[i + 1] + "·" + parts[i + 2];
+      cnt[k] = (cnt[k] || 0) + 1;
+    });
+    var vals = Object.keys(cnt).map(function (k) { return cnt[k]; }).sort(function (a, b) { return b - a; });
+    var total = vals.reduce(function (s, v) { return s + v; }, 0);
+    var n = vals.length;
+    var acum = 0, pontosL = [[0, 0]], meta50 = null;
+    vals.forEach(function (v, i) {
+      acum += v;
+      pontosL.push([(i + 1) / n, acum / total]);
+      if (meta50 === null && acum / total >= 0.5) meta50 = (i + 1) / n;
+    });
+    var soma = 0;
+    for (var i2 = 1; i2 < pontosL.length; i2++) {
+      soma += (pontosL[i2][0] - pontosL[i2 - 1][0]) * (pontosL[i2][1] + pontosL[i2 - 1][1]);
+    }
+    var gini = Math.abs(1 - soma);
+    var W = 460, H = 320, mL2 = 38, mB2 = 30;
+    function lx(f) { return mL2 + f * (W - mL2 - 10); }
+    function ly(f) { return 10 + (1 - f) * (H - mB2 - 10); }
+    var caminho = pontosL.map(function (pt2) { return lx(pt2[0]).toFixed(1) + "," + ly(pt2[1]).toFixed(1); }).join(" ");
+    $("lorenz").innerHTML = '<svg class="lorenz-svg" viewBox="0 0 ' + W + " " + H + '" role="img">' +
+      '<line class="eixo" x1="' + mL2 + '" y1="' + ly(0) + '" x2="' + lx(1) + '" y2="' + ly(0) + '"></line>' +
+      '<line class="eixo" x1="' + mL2 + '" y1="' + ly(0) + '" x2="' + mL2 + '" y2="' + ly(1) + '"></line>' +
+      '<line class="diag" x1="' + lx(0) + '" y1="' + ly(0) + '" x2="' + lx(1) + '" y2="' + ly(1) + '"></line>' +
+      '<polygon class="area-l" points="' + caminho + " " + lx(1).toFixed(1) + "," + ly(0).toFixed(1) + " " + lx(0).toFixed(1) + "," + ly(0).toFixed(1) + '"></polygon>' +
+      '<polyline class="curva" points="' + caminho + '"></polyline>' +
+      '<text x="' + lx(0.5) + '" y="' + (H - 8) + '" text-anchor="middle">lugares (ordenados do mais rodado para o menos)</text>' +
+      '<text x="14" y="' + ly(0.5) + '" transform="rotate(-90 14 ' + ly(0.5) + ')" text-anchor="middle">colocações acumuladas</text>' +
+      "</svg>";
+    $("lorenz-tiles").innerHTML =
+      '<div class="dtile"><b>' + Math.round(100 * meta50) + "%</b><span>dos lugares concentram metade das colocações</span></div>" +
+      '<div class="dtile"><b>' + gini.toFixed(2).replace(".", ",") + "</b><span>índice de Gini da rotação (" + fmt(n) + " lugares, 2017–2026)</span></div>";
+  }
+
+  /* ---------- armadilha da precariedade ---------- */
+  function renderArmadilha() {
+    var by = {};
+    DATA.forEach(function (r) { (by[r[NOME]] = by[r[NOME]] || []).push(r); });
+    var pp = 0, pe = 0, ep = 0, ee = 0;
+    Object.keys(by).forEach(function (nm) {
+      var rs = by[nm].sort(function (a, b) { return a[ANO] - b[ANO]; });
+      for (var i = 1; i < rs.length; i++) {
+        if (rs[i - 1][PREC]) { if (rs[i][PREC]) pp++; else pe++; }
+        else { if (rs[i][PREC]) ep++; else ee++; }
+      }
+    });
+    var nP = pp + pe, nE = ep + ee;
+    $("armadilha").innerHTML =
+      '<div class="dtile"><b>' + Math.round(100 * pp / (nP || 1)) + "%</b><span>dos precários continuam precários no movimento seguinte (" + fmt(nP) + " transições)</span></div>" +
+      '<div class="dtile"><b>' + Math.round(100 * pe / (nP || 1)) + "%</b><span>conseguem lugar de efetivo</span></div>" +
+      '<div class="dtile"><b>' + Math.round(100 * ep / (nE || 1)) + "%</b><span>dos efetivos que se movem caem em colocação precária (" + fmt(nE) + " transições)</span></div>";
+  }
+
+  /* ---------- escada da carreira ---------- */
+  function renderEscada() {
+    var ORDEM = ["Competência genérica", "Local cível", "Local criminal", "Família e menores",
+      "Trabalho", "Comércio", "Execução", "Instrução criminal", "Central criminal",
+      "Central cível", "Central cível e criminal", "Quadro complementar", "Secção da Relação"];
+    var by = {};
+    DATA.forEach(function (r) { if (r[ANO] >= 2014) (by[r[NOME]] = by[r[NOME]] || []).push(r); });
+    var m = {}, tot = {};
+    Object.keys(by).forEach(function (nm) {
+      var rs = by[nm].sort(function (a, b) { return a[ANO] - b[ANO]; });
+      for (var i = 1; i < rs.length; i++) {
+        var de = tipoJuizo(rs[i - 1][DST]), para = tipoJuizo(rs[i][DST]);
+        if (ORDEM.indexOf(de) === -1 || ORDEM.indexOf(para) === -1) continue;
+        m[de + "|" + para] = (m[de + "|" + para] || 0) + 1;
+        tot[de] = (tot[de] || 0) + 1;
+      }
+    });
+    var linhas = ORDEM.filter(function (o) { return (tot[o] || 0) >= 25; });
+    var html = '<table class="heat escada"><thead><tr><th>de ↓ para →</th>' + ORDEM.map(function (c) {
+      return "<th>" + esc(c) + "</th>";
+    }).join("") + "<th>n</th></tr></thead><tbody>";
+    linhas.forEach(function (o) {
+      html += "<tr><th>" + esc(o) + "</th>" + ORDEM.map(function (dd) {
+        var v = m[o + "|" + dd] || 0;
+        var pct = 100 * v / tot[o];
+        var alpha = pct ? Math.round(6 + 54 * Math.min(pct, 50) / 50) : 0;
+        return '<td title="' + esc(o + " → " + dd + ": " + v + " (" + Math.round(pct) + "%)") +
+          '" style="background:color-mix(in srgb, var(--accent) ' + alpha + '%, transparent)' +
+          (o === dd ? ";outline:1px solid var(--baseline);outline-offset:-1px" : "") + '">' +
+          (pct >= 3 ? Math.round(pct) + "%" : "") + "</td>";
+      }).join("") + "<th>" + fmt(tot[o]) + "</th></tr>";
+    });
+    $("escada").innerHTML = html + "</tbody></table>";
+  }
+
+  /* ---------- demografia do sistema (estáticos) ---------- */
+  function renderDemografia() {
+    var novos = QREN.map(function (q) { return q[2]; }).filter(function (v) { return v != null; });
+    var sai = QREN.map(function (q) { return q[3]; }).filter(function (v) { return v != null; });
+    function media(v) { return Math.round(v.reduce(function (s, x) { return s + x; }, 0) / v.length); }
+    var net = QREN.filter(function (q) { return q[2] != null && q[3] != null; })
+      .reduce(function (s, q) { return s + q[2] - q[3]; }, 0);
+    $("balanco").innerHTML =
+      '<div class="dtile"><b>' + media(novos) + "/ano</b><span>entradas no sistema (média 2017–2024)</span></div>" +
+      '<div class="dtile"><b>' + media(sai) + "/ano</b><span>saídas do sistema (média 2016–2024)</span></div>" +
+      '<div class="dtile"><b>' + (net > 0 ? "+" : "") + fmt(net) + "</b><span>saldo acumulado 2017–2024 (entradas − saídas)</span></div>";
+    if (PAYLOAD.cejPipeline) {
+      var mediaSai = media(sai);
+      $("balanco-nota").innerHTML = "<b>Já em formação no CEJ:</b> " +
+        PAYLOAD.cejPipeline.map(function (c) {
+          var d = c[1] - mediaSai;
+          return c[1] + " vagas judiciais → colocação ~" + c[0] + " (" + c[2] + ", " +
+            (d >= 0 ? "+" : "") + d + " face às saídas médias)";
+        }).join(" · ") +
+        ". Os cursos recentes cresceram de 52 para 79 vagas — ao ritmo atual de saídas, o défice inverte-se a partir de ~2028, se as vagas se converterem em colocações.";
+    }
+
+    function serieG(iF, iT, nome, cor) {
+      return { k: nome, c: cor, pts: PAYLOAD.renovGen.filter(function (r) { return r[iT] >= 10; })
+        .map(function (r) {
+          var pct = 100 * r[iF] / r[iT];
+          return { x: r[0], y: pct, tip: "<b>" + nome + " · " + r[0] + "</b><br>" +
+            fmt(r[iF]) + " mulheres em " + fmt(r[iT]) + " (" + Math.round(pct) + "%)" };
+        }) };
+    }
+    lineChart("renovgen", [serieG(1, 2, "Entradas", "var(--accent)"), serieG(3, 4, "Saídas", "var(--cat3)")],
+      { yMin: 0, yMax: 100, yTicks: [0, 25, 50, 75, 100], ref: 50,
+        yFmt: function (v) { return v + "%"; },
+        endFmt: function (pt) { return Math.round(pt.y) + "% ♀"; } });
+
+    var cs = PAYLOAD.carreiraSaida;
+    renderVBars("csaida", cs.hist.map(function (h) {
+      return { l: h[0] + (h[0] === "<5" ? " anos" : ""), v: h[1],
+        tip: "<b>" + h[0] + " anos observáveis</b><br>" + fmt(h[1]) + " saídas" };
+    }));
+    $("csaida-tiles").innerHTML =
+      '<div class="dtile"><b>≥' + cs.med + " <small>anos</small></b><span>mediana observável de carreira à saída (" + fmt(cs.n) + " saídas)</span></div>" +
+      '<div class="dtile"><b>≥' + PAYLOAD.promoAnos.med + " <small>anos</small></b><span>mediana observável até à promoção à Relação (" + fmt(PAYLOAD.promoAnos.n) + " promoções)</span></div>";
+
+    renderHBars("saidascomarca", PAYLOAD.saidasComarca.filter(function (s) { return s[1] >= 3; })
+      .map(function (s) {
+        return { l: s[0], v: s[3], txt: String(s[3]).replace(".", ",") + "%/ano",
+          tip: "<b>" + esc(s[0]) + "</b><br>" + fmt(s[1]) + " saídas em 2016–2024<br>quadro médio: " + fmt(s[2]) + " juízes" };
+      }), function (it) { return it.tip; });
+
+    var acesso = {};
+    DATA.forEach(function (r) { if (r[MOT] === "1.º acesso") acesso[r[ANO]] = (acesso[r[ANO]] || 0) + 1; });
+    var ptsS = [], ptsA = [];
+    QREN.forEach(function (q) {
+      if (q[3] == null) return;
+      ptsS.push({ x: q[0], y: q[3], tip: "<b>Saídas · " + q[0] + "</b><br>" + fmt(q[3]) + " juízes" });
+      var a1 = acesso[q[0] + 1] || 0;
+      ptsA.push({ x: q[0], y: a1, tip: "<b>1.º acesso em " + (q[0] + 1) + "</b><br>" + fmt(a1) + " colocações" });
+    });
+    lineChart("eco", [
+      { k: "Saídas", c: "var(--neg)", pts: ptsS },
+      { k: "1.º acesso (ano seg.)", c: "var(--accent)", pts: ptsA },
+    ], { yMin: 0 });
+    var n = Math.min(ptsS.length, ptsA.length);
+    var mx = ptsS.reduce(function (s, pt) { return s + pt.y; }, 0) / n;
+    var my = ptsA.reduce(function (s, pt) { return s + pt.y; }, 0) / n;
+    var num = 0, dx = 0, dy = 0;
+    for (var i = 0; i < n; i++) {
+      num += (ptsS[i].y - mx) * (ptsA[i].y - my);
+      dx += Math.pow(ptsS[i].y - mx, 2);
+      dy += Math.pow(ptsA[i].y - my, 2);
+    }
+    var rr = dx && dy ? num / Math.sqrt(dx * dy) : 0;
+    $("eco-desc").textContent += " Correlação (2016–2024): r = " + rr.toFixed(2).replace(".", ",") + ".";
+
+    var idd = PAYLOAD.idades;
+    if (idd) {
+      var maxP = 0;
+      idd.piramide.forEach(function (b) { maxP = Math.max(maxP, b[1], b[2]); });
+      var ph = '<div class="pir-head"><span>♀ mulheres</span><span></span><span>homens ♂</span></div>';
+      idd.piramide.slice().reverse().forEach(function (b) {
+        var tot = b[1] + b[2];
+        function lado(v, cls) {
+          var pct = Math.round(100 * v / tot);
+          var bar = '<span class="pir-bar" style="width:' + (92 * v / maxP) + '%" title="' +
+            b[0] + " anos: " + fmt(v) + " (" + pct + '%)"></span>';
+          var num = '<span class="pir-num">' + fmt(v) + "</span>";
+          return '<div class="' + cls + '">' + (cls === "pir-f" ? num + bar : bar + num) + "</div>";
+        }
+        ph += '<div class="pir-row">' + lado(b[1], "pir-f") +
+          '<div class="pir-lbl">' + b[0] + "</div>" + lado(b[2], "pir-m") + "</div>";
+      });
+      $("piramide").innerHTML = ph;
+
+      function serieRel(idx, nome, cor) {
+        return { k: nome, c: cor, pts: idd.relogio.map(function (r) {
+          return { x: r[0], y: r[idx], tip: "<b>" + esc(nome) + " · " + r[0] + "</b><br>" +
+            fmt(r[idx]) + " juízes" + (r[0] === 2026 && idx === 1 ? "<br>(inclui quem já passou os 66)" : "") };
+        }) };
+      }
+      lineChart("relogio", [
+        serieRel(1, "Chegam aos 66", "var(--accent)"),
+        serieRel(2, "Chegam aos 70", "var(--neg)"),
+      ], { yMin: 0, reta: true, endFmt: function () { return ""; } });
+
+      $("idades-tiles").innerHTML =
+        '<div class="dtile"><b>' + idd.med.global + ' <small>anos</small></b><span>idade mediana estimada dos ' + fmt(idd.n) + " magistrados judiciais no ativo</span></div>" +
+        '<div class="dtile"><b>' + idd.med.jd + " · " + idd.med.des + " · " + idd.med.cons + '</b><span>medianas por degrau: 1.ª instância · Relação · STJ (carreira) — a escada envelhece</span></div>' +
+        '<div class="dtile"><b>' + idd.des60 + '%</b><span>dos desembargadores já têm 60 ou mais anos — o viveiro do STJ está ele próprio em idade de saída</span></div>' +
+        '<div class="dtile"><b>2027–28</b><span>o vale demográfico: só ~21/ano chegam aos 66, contra ~150 em 2033</span></div>';
+      $("idades-nota").innerHTML = "Três leituras. <b>1)</b> A pirâmide mostra a feminização em marcha: 76% de mulheres na banda dos 35–39, maioria masculina apenas nos 65+. <b>2)</b> Os conselheiros de carreira tinham, no fim de 2025, idade estimada de 66 ou mais — o Supremo pré-reforma era uma porta giratória de promoções tardias, que a coorte jovem de 2026 vem interromper (cartão seguinte). <b>3)</b> O relógio das aposentações é ondulado: um vale em 2027–28 e a onda da geração de 90 a chegar aos 66 por volta de 2033 — o ritmo médio esconde estas marés.";
+    }
+
+    var gg = PAYLOAD.gargalo;
+    if (gg) {
+      function serieCen(vals, nome, cor) {
+        return { k: nome, c: cor, pts: gg.anos.map(function (a, i) {
+          return { x: a, y: vals[i], tip: "<b>" + esc(nome) + " · " + a + "</b><br>" +
+            fmt(vals[i]) + (vals[i] === 1 ? " vaga" : " vagas") + " no STJ" };
+        }) };
+      }
+      lineChart("gargalo", [
+        serieCen(gg.cenA, "A · sai 67", "var(--accent)"),
+        serieCen(gg.cenB, "B · até 70", "var(--cat3)"),
+      ], { yMin: 0, reta: true, endFmt: function (pt) { return ""; } });
+      $("gargalo-tiles").innerHTML =
+        '<div class="dtile"><b>⅓</b><span>da lista de antiguidade convocada para o 18.º concurso (antes: ¼)</span></div>' +
+        '<div class="dtile"><b>141</b><span>graduados: 126 desembargadores + 15 do Ministério Público e juristas</span></div>' +
+        '<div class="dtile"><b>17</b><span>conselheiros empossados a 9-jul-2026, a maioria com menos de 60 anos</span></div>' +
+        '<div class="dtile"><b>0–7<small>/ano</small></b><span>vagas no STJ em 2029–2034 conforme o cenário, contra ' + gg.cenA[0] + " em 2026</span></div>";
+      $("gargalo-nota").innerHTML = "A leitura é a mesma nos dois cenários: depois da vaga excecional de 2026–2028, o Supremo quase não liberta lugares durante anos — no cenário de retenção, o concurso seguinte (vagas a partir de agosto de 2028) apanha três anos praticamente a zero. E o gargalo desce em cascata: cada vaga que não abre no STJ é uma promoção a menos na Relação (média de " +
+        gg.promoRelMedia + "/ano desde 2015); desembargadores que adiem a jubilação à espera de vaga seguram, por sua vez, os lugares que alimentam as promoções da 1.ª instância e o 1.º acesso — em rota de colisão com o pipeline recorde do CEJ (75+79 vagas em 2028–29). Sinal a acompanhar nos próximos movimentos: a queda das saídas na Relação. <i>Cartão motivado pelo relato de um desembargador leitor do csmRadar; fontes: Div. n.º 61 e 109/2026 do CSM.</i>";
+    }
+
+    var pj = PAYLOAD.projecao;
+    renderVBars("projecao", pj.coortes.map(function (c) {
+      return { l: c[0], v: c[1], tip: "<b>" + c[0] + " anos de sistema (observáveis)</b><br>" + fmt(c[1]) + " juízes no ativo" };
+    }));
+    var entradasCEJ = (PAYLOAD.cejPipeline || []).reduce(function (s, c) { return s + c[1]; }, 0);
+    $("projecao-tiles").innerHTML =
+      '<div class="dtile"><b>~' + fmt(pj.est2030) + "</b><span>saídas projetadas até 2030 (ritmo de " + pj.media5 + "/ano dos últimos 5 anos)</span></div>" +
+      '<div class="dtile"><b>' + fmt(entradasCEJ) + "</b><span>entradas já garantidas pelo pipeline do CEJ (41.º–43.º cursos, colocação 2027–2029)</span></div>" +
+      '<div class="dtile"><b>' + fmt(pj.coortes[0][1] + pj.coortes[1][1]) + "</b><span>dos " + fmt(pj.ativos) + " ativos têm já 15+ anos observáveis de sistema</span></div>";
   }
 
   /* ---------- filtros ---------- */
@@ -1624,6 +2601,7 @@
       state.ate = +r[1];
       state.rows = 60;
       syncPeriodo();
+      hashEscrever();
       renderAll(false);
     });
   });
@@ -1638,16 +2616,31 @@
     }
     state.rows = 60;
     syncPeriodo();
+    hashEscrever();
     renderAll(false);
   }
   selDe.addEventListener("change", onSel);
   selAte.addEventListener("change", onSel);
+  state.mm = "saldo";
+  $("mapa-metricas").innerHTML = [["saldo", "Saldo"], ["prec", "Precariedade"], ["antig", "Antiguidade"], ["mulheres", "Mulheres"], ["atrat", "Atratividade"]]
+    .map(function (par) {
+      return '<button class="chip" data-mm="' + par[0] + '" aria-pressed="' + (par[0] === "saldo") + '">' + par[1] + "</button>";
+    }).join("");
+  document.querySelectorAll(".chip[data-mm]").forEach(function (ch) {
+    ch.addEventListener("click", function () {
+      document.querySelectorAll(".chip[data-mm]").forEach(function (c) { c.setAttribute("aria-pressed", "false"); });
+      ch.setAttribute("aria-pressed", "true");
+      state.mm = ch.dataset.mm;
+      renderMapa();
+    });
+  });
   document.querySelectorAll(".chip[data-inst]").forEach(function (ch) {
     ch.addEventListener("click", function () {
       document.querySelectorAll(".chip[data-inst]").forEach(function (c) { c.setAttribute("aria-pressed", "false"); });
       ch.setAttribute("aria-pressed", "true");
       state.inst = ch.dataset.inst;
       state.rows = 60;
+      hashEscrever();
       renderAll(true);
     });
   });
@@ -1657,13 +2650,102 @@
     if (comEvo !== false) renderEvo(); else renderEvo();
     renderMapa(); renderGeneroMov();
     renderFlows(); renderSaldo(); renderPrefs();
-    renderZonas(); renderKm();
+    renderZonas(); renderKm(); renderHeatOD(); renderBandaPref();
     renderAtrat(); renderGiratoria(); renderAntig(); renderMerito(); renderPrecarias();
     renderEquidade();
     renderMotivos(); renderJuizos(); renderClassif();
     $("flows-desc").textContent = (state.de ? "Rotas de " + rotuloPeriodo() : "Principais rotas acumuladas 2004–2026") +
       " (excluídos os movimentos dentro da mesma comarca). Espessura proporcional ao n.º de juízes; passar o rato para isolar uma rota.";
   }
+
+  // tilt 3D contido no mapa
+  (function () {
+    if (RM || !matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    var host = $("mapa");
+    host.addEventListener("mousemove", function (e) {
+      var s = host.querySelector("svg");
+      if (!s) return;
+      var r = host.getBoundingClientRect();
+      var dx = (e.clientX - r.left) / r.width - 0.5;
+      var dy = (e.clientY - r.top) / r.height - 0.5;
+      s.style.transform = "rotateY(" + (dx * 7).toFixed(2) + "deg) rotateX(" + (-dy * 7).toFixed(2) + "deg)";
+    });
+    host.addEventListener("mouseleave", function () {
+      var s = host.querySelector("svg");
+      if (s) s.style.transform = "";
+    });
+  })();
+
+  // modo apresentação
+  (function () {
+    var overlay = $("apres"), slideEl = $("apres-slide"), posEl = $("apres-pos");
+    var idx = 0, aberto = false;
+    function mostra(i) {
+      var itens = renderDestaques.__itens || [];
+      if (!itens.length) return;
+      idx = (i + itens.length) % itens.length;
+      var it = itens[idx];
+      slideEl.innerHTML = '<div class="a-kicker">csmRadar · movimentos judiciais 2004–2026</div>' +
+        '<div class="a-num"><span class="a-v">0</span><small>' + it.suf + "</small></div>" +
+        '<div class="a-frase">' + esc(it.fr) + "</div>";
+      posEl.textContent = (idx + 1) + " / " + itens.length;
+      countUp(slideEl.querySelector(".a-v"), 0, it.v);
+    }
+    function abre() {
+      aberto = true;
+      overlay.classList.add("aberta");
+      document.body.style.overflow = "hidden";
+      mostra(0);
+      overlay.querySelector(".a-fechar").focus();
+    }
+    function fecha() {
+      aberto = false;
+      overlay.classList.remove("aberta");
+      document.body.style.overflow = "";
+    }
+    $("btn-apres").addEventListener("click", abre);
+    overlay.querySelector(".a-fechar").addEventListener("click", fecha);
+    overlay.querySelector(".a-ant").addEventListener("click", function () { mostra(idx - 1); });
+    overlay.querySelector(".a-prox").addEventListener("click", function () { mostra(idx + 1); });
+    addEventListener("keydown", function (e) {
+      if (!aberto) return;
+      if (e.key === "Escape") fecha();
+      else if (e.key === "ArrowRight" || e.key === " ") mostra(idx + 1);
+      else if (e.key === "ArrowLeft") mostra(idx - 1);
+    });
+  })();
+
+  // scrollspy: destaca a secção visível na barra de navegação
+  (function () {
+    var links = {};
+    document.querySelectorAll(".anchors a").forEach(function (a) {
+      links[a.getAttribute("href").slice(1)] = a;
+    });
+    function ativar(id) {
+      Object.keys(links).forEach(function (k) { links[k].classList.toggle("ativo", k === id); });
+    }
+    if ("IntersectionObserver" in window) {
+      var atual = null;
+      var spy = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { atual = e.target.id; ativar(atual); }
+        });
+      }, { rootMargin: "-10% 0px -80% 0px" });
+      document.querySelectorAll(".sec-band[id]").forEach(function (el) { spy.observe(el); });
+    }
+    var topo = $("topo");
+    var aguarda = false;
+    addEventListener("scroll", function () {
+      if (aguarda) return;
+      aguarda = true;
+      requestAnimationFrame(function () {
+        topo.classList.toggle("visivel", scrollY > 700);
+        if (scrollY < 300) ativar(null);
+        aguarda = false;
+      });
+    }, { passive: true });
+    topo.addEventListener("click", function () { scrollTo({ top: 0, behavior: RM ? "auto" : "smooth" }); });
+  })();
 
   if (!RM && "IntersectionObserver" in window) {
     var io = new IntersectionObserver(function (entries) {
@@ -1679,6 +2761,18 @@
     document.querySelectorAll(".reveal").forEach(function (el) { el.classList.add("on"); });
   }
 
+  hashLer();
+  syncPeriodo();
+  renderDemografia();
+  renderEscada();
+  renderArmadilha();
+  renderLorenz();
+  selC.value = mcAtual;
+  renderMinhaComarca();
+  document.querySelectorAll(".chip[data-inst]").forEach(function (c) {
+    c.setAttribute("aria-pressed", String(c.dataset.inst === state.inst));
+  });
+  renderDestaques();
   renderGeneroQuadros();
   renderReforma();
   renderPermanencia();
