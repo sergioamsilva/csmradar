@@ -300,11 +300,29 @@ def main():
                 rel66[a66] += 1
             if a70 <= 2040:
                 rel70[a70] += 1
+        # pirâmide por ano (2015-2025), bandas fixas para animação comparável
+        BANDAS = [35, 40, 45, 50, 55, 60, 65]
+        piram_anos = {}
+        for ano_r, cat, mag, gen in con.execute(
+                """SELECT ano_ref, categoria, anos_magistratura, genero
+                   FROM antiguidade"""):
+            if cat == "Juiz Conselheiro" and mag < 20:
+                continue
+            idade = idade_nomeacao(ano_r + 1.0 - mag) + mag
+            b = min(65, max(35, int(idade // 5) * 5))
+            piram_anos.setdefault(ano_r, Counter())[(b, gen)] += 1
+        anos_pa = sorted(piram_anos)
         bandas = sorted(set(b for b, _ in piram))
         des = sorted(idades_cat["Juiz Desembargador"])
         idades_payload = {
             "piramide": [[("65+" if b == 65 else f"{b}–{b + 4}"),
                           piram[(b, "F")], piram[(b, "M")]] for b in bandas],
+            "piramAnos": {
+                "anos": anos_pa,
+                "bandas": [("65+" if b == 65 else "≤39" if b == 35 else f"{b}–{b + 4}")
+                           for b in BANDAS],
+                "dados": [[[piram_anos[a][(b, "F")], piram_anos[a][(b, "M")]]
+                           for b in BANDAS] for a in anos_pa]},
             "relogio": [[a, rel66[a], rel70[a]] for a in range(2026, 2041)],
             "med": {c: round(statistics.median(v)) for c, v in
                     (("cons", idades_cat["Juiz Conselheiro"]),

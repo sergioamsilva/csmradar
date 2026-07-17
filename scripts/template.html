@@ -558,7 +558,8 @@
   .pir-bar { height: 18px; border-radius: 3px; transition: width 0.6s ease; }
   .pir-f .pir-bar { background: var(--accent); }
   .pir-m .pir-bar { background: var(--cat2); }
-  .pir-num { font-size: 11px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  .pir-num { font-size: 11px; color: var(--ink-2); font-variant-numeric: tabular-nums; min-width: 26px; }
+  .pir-f .pir-num { text-align: right; }
   .pir-head { display: grid; grid-template-columns: 1fr 56px 1fr; font-size: 11.5px; font-weight: 700; margin-bottom: 6px; }
   .pir-head span:first-child { text-align: right; color: var(--accent); }
   .pir-head span:last-child { color: var(--cat2); }
@@ -854,11 +855,16 @@
 
     <section class="card full reveal">
       <h2>Que idade têm os juízes?</h2>
-      <p class="desc">O CSM não publica idades, mas a <a href="https://csm.org.pt/juizes/listas-de-antiguidade/" target="_blank" rel="noopener">lista de antiguidade</a> (31-12-2025) dá o tempo de serviço de cada um dos 1941 magistrados judiciais no ativo. Estimamos a idade somando-lhe a idade típica de nomeação da época de ingresso: ~26 anos no início dos anos 80 (autocalibrada pelo limite de idade dos 70) até ~34 hoje (os auditores do CEJ entram aos ~31, mais dois anos de curso), com interpolação entre épocas. Incerteza de ±3–4 anos por pessoa; 15 conselheiros de entrada lateral (MP e juristas) ficam de fora; só agregados. Não é afetado pelos filtros.</p>
+      <p class="desc">O CSM não publica idades, mas a <a href="https://csm.org.pt/juizes/listas-de-antiguidade/" target="_blank" rel="noopener">lista de antiguidade</a> (31-12-2025) dá o tempo de serviço de cada um dos 1941 magistrados judiciais no ativo. Estimamos a idade somando-lhe a idade típica de nomeação da época de ingresso: ~26 anos no início dos anos 80 (autocalibrada pelo limite de idade dos 70) até ~34 hoje (os auditores do CEJ entram aos ~31, mais dois anos de curso), com interpolação entre épocas. Incerteza de ±3–4 anos por pessoa; conselheiros de entrada lateral (MP e juristas) ficam de fora; só agregados. O botão ▶ anima a década 2015–2025: a base feminina a alargar, o topo a envelhecer. Não é afetado pelos filtros.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start" id="idades-grid">
         <div>
           <h3 class="minih">Pirâmide etária estimada, por género</h3>
           <div id="piramide"></div>
+          <div class="hemi-controlos" style="margin-top:12px">
+            <button id="pir-play" class="chip" aria-label="Animar a pirâmide de 2015 a 2025">▶ Ver a década</button>
+            <input type="range" id="pir-ano" min="0" max="10" value="10" aria-label="Ano da pirâmide">
+            <span class="hemi-ano" id="pir-lbl"></span>
+          </div>
         </div>
         <div>
           <h3 class="minih">O relógio das aposentações: quantos chegam aos 66 e aos 70, por ano</h3>
@@ -2577,22 +2583,52 @@
 
     var idd = PAYLOAD.idades;
     if (idd) {
+      var PA = idd.piramAnos;
       var maxP = 0;
-      idd.piramide.forEach(function (b) { maxP = Math.max(maxP, b[1], b[2]); });
+      PA.dados.forEach(function (yr) { yr.forEach(function (b) { maxP = Math.max(maxP, b[0], b[1]); }); });
       var ph = '<div class="pir-head"><span>♀ mulheres</span><span></span><span>homens ♂</span></div>';
-      idd.piramide.slice().reverse().forEach(function (b) {
-        var tot = b[1] + b[2];
-        function lado(v, cls) {
-          var pct = Math.round(100 * v / tot);
-          var bar = '<span class="pir-bar" style="width:' + (92 * v / maxP) + '%" title="' +
-            b[0] + " anos: " + fmt(v) + " (" + pct + '%)"></span>';
-          var num = '<span class="pir-num">' + fmt(v) + "</span>";
-          return '<div class="' + cls + '">' + (cls === "pir-f" ? num + bar : bar + num) + "</div>";
-        }
-        ph += '<div class="pir-row">' + lado(b[1], "pir-f") +
-          '<div class="pir-lbl">' + b[0] + "</div>" + lado(b[2], "pir-m") + "</div>";
-      });
+      for (var bi = PA.bandas.length - 1; bi >= 0; bi--) {
+        ph += '<div class="pir-row">' +
+          '<div class="pir-f"><span class="pir-num" data-b="' + bi + '" data-g="0"></span><span class="pir-bar" data-b="' + bi + '" data-g="0"></span></div>' +
+          '<div class="pir-lbl">' + PA.bandas[bi] + "</div>" +
+          '<div class="pir-m"><span class="pir-bar" data-b="' + bi + '" data-g="1"></span><span class="pir-num" data-b="' + bi + '" data-g="1"></span></div></div>';
+      }
       $("piramide").innerHTML = ph;
+      var pirBars = $("piramide").querySelectorAll(".pir-bar");
+      var pirNums = $("piramide").querySelectorAll(".pir-num");
+      function pintaPir(ix) {
+        var d = PA.dados[ix];
+        pirBars.forEach(function (el) {
+          var v = d[+el.dataset.b][+el.dataset.g];
+          var tot = d[+el.dataset.b][0] + d[+el.dataset.b][1];
+          el.style.width = (92 * v / maxP) + "%";
+          el.title = PA.bandas[+el.dataset.b] + " anos · " + PA.anos[ix] + ": " + fmt(v) +
+            (tot ? " (" + Math.round(100 * v / tot) + "%)" : "");
+        });
+        pirNums.forEach(function (el) {
+          el.textContent = fmt(d[+el.dataset.b][+el.dataset.g]);
+        });
+        $("pir-lbl").textContent = PA.anos[ix];
+        $("pir-ano").value = ix;
+      }
+      $("pir-ano").max = PA.anos.length - 1;
+      $("pir-ano").addEventListener("input", function () { pintaPir(+this.value); });
+      var pirTimer = null;
+      function paraPir() {
+        if (pirTimer) { clearInterval(pirTimer); pirTimer = null; }
+        $("pir-play").textContent = "▶ Ver a década";
+      }
+      $("pir-play").addEventListener("click", function () {
+        if (pirTimer) { paraPir(); return; }
+        if (+$("pir-ano").value >= PA.anos.length - 1) pintaPir(0);
+        $("pir-play").textContent = "❚❚ Pausa";
+        pirTimer = setInterval(function () {
+          var i2 = +$("pir-ano").value;
+          if (i2 >= PA.anos.length - 1) { paraPir(); return; }
+          pintaPir(i2 + 1);
+        }, 850);
+      });
+      pintaPir(PA.anos.length - 1);
 
       function serieRel(idx, nome, cor) {
         return { k: nome, c: cor, pts: idd.relogio.map(function (r) {
