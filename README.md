@@ -137,7 +137,11 @@ ambos os cenários e, daí em diante, aos 67 (cenário A) ou por retenção até
 limite de 70 (cenário B). O modelo é calibrado pelo observado — 17 posses em
 julho de 2026 (28 no ano simulado, incluindo as anunciadas para o outono) e
 ~42 promoções até agosto de 2028, compatível com a expectativa do concurso —
-e não constitui uma previsão.
+e não constitui uma previsão. A visualização
+«As cadeiras do Supremo» aplica o mesmo modelo cadeira a cadeira: de 2015 a
+2025 a ocupação é a real, reconstruída das listas de antiguidade (cada
+magistrado conserva a sua cadeira enquanto serve); de 2026 em diante saem os
+mais velhos ao ritmo anual do cenário escolhido.
 
 ## Limitações
 

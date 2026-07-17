@@ -376,6 +376,58 @@ def main():
             "nPromoRel": sum(len(v) for v in p_rel.values()),
         }
 
+    # ---- as cadeiras do Supremo: ocupação por cadeira, 2015-2025 real
+    # (listas de antiguidade) + 2026-2038 pelos cenários do gargalo ----
+    # Cada conselheiro ocupa uma cadeira fixa (atribuída à chegada, como num
+    # hemiciclo); a idade é estimada como no cartão das idades; para as
+    # entradas laterais (MP/juristas, tempo de magistratura < 20 anos) usa-se
+    # 55 + tempo na categoria — estimativa grosseira, só para a coloração.
+    cadeiras_payload = None
+    if tem_antiguidade:
+        N_CAD = 63
+        seats = [None] * N_CAD
+        snaps_real = []
+        anos_reais = list(range(2015, 2026))
+        por_ano = {}
+        for ano_r, nome, mag, catt in con.execute(
+                """SELECT ano_ref, nome, anos_magistratura, anos_categoria
+                   FROM antiguidade WHERE categoria = 'Juiz Conselheiro'"""):
+            idade_c = (idade_nomeacao(ano_r + 1.0 - mag) + mag if mag >= 20
+                       else 55 + catt)
+            por_ano.setdefault(ano_r, {})[fold_nome(nome)] = (
+                round(idade_c), round(ano_r + 1 - catt))
+        for a in anos_reais:
+            atual = por_ano.get(a, {})
+            for i, s in enumerate(seats):
+                if s and s not in atual:
+                    seats[i] = None
+            sentados = {s for s in seats if s}
+            livres = [i for i, s in enumerate(seats) if s is None]
+            for f in sorted(atual, key=lambda x: atual[x][1]):
+                if f not in sentados and livres:
+                    seats[livres.pop(0)] = f
+            snaps_real.append([list(atual[s]) if s and s in atual else 0
+                               for s in seats])
+
+        # ramos 2026-2038: as saídas anuais seguem as séries do gargalo;
+        # sai quem está mais velho, entra-se aos ~58
+        def ramo(saidas_ano):
+            estado = [list(x) if x else None for x in snaps_real[-1]]
+            snaps = []
+            for k, a in enumerate(range(2026, 2039)):
+                for s in estado:
+                    if s:
+                        s[0] += 1
+                ocup = sorted((i for i, s in enumerate(estado) if s),
+                              key=lambda i: -estado[i][0])
+                for i in ocup[:saidas_ano[k]]:
+                    estado[i] = [58, a]
+                snaps.append([list(s) if s else 0 for s in estado])
+            return snaps
+
+        cadeiras_payload = {"anosReais": anos_reais, "real": snaps_real}
+        # os ramos cenA/cenB são acrescentados depois de calculado o gargalo
+
     promo_rel = [n for (n,) in con.execute(
         """SELECT COUNT(*) FROM movimentos
            WHERE instancia = 'Relação' AND motivo LIKE 'Promo%' AND ano >= 2015
@@ -383,6 +435,9 @@ def main():
     gargalo = {"anos": list(range(2026, 2039)),
                "cenA": simula_stj(67), "cenB": simula_stj(70),
                "promoRelMedia": round(sum(promo_rel) / len(promo_rel))}
+    if cadeiras_payload:
+        cadeiras_payload["cenA"] = ramo(gargalo["cenA"])
+        cadeiras_payload["cenB"] = ramo(gargalo["cenB"])
     payload = json.dumps({"recs": recs, "quadroGen": quadro_gen, "mapa": mapa,
                           "quadroRenov": quadro_renov, "comissoes": comissoes,
                           "saidasOficiais": saidas_oficiais, "renovGen": renov_gen,
@@ -390,7 +445,7 @@ def main():
                           "carreiraSaida": carreira_saida, "promoAnos": promo_anos,
                           "saidasComarca": saidas_comarca, "projecao": projecao,
                           "gargalo": gargalo, "idades": idades_payload,
-                          "fila": fila_payload},
+                          "fila": fila_payload, "cadeiras": cadeiras_payload},
                          ensure_ascii=False, separators=(",", ":"))
     payload = payload.replace("</", "<\\/")
 

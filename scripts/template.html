@@ -534,6 +534,23 @@
     #fila-grid { grid-template-columns: 1fr !important; }
   }
   .minih { margin: 0 0 10px; font-size: 13px; font-weight: 700; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.04em; }
+  .hemi-controlos { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin: 4px 0 6px; }
+  .hemi-controlos input[type="range"] { flex: 1; min-width: 140px; accent-color: var(--accent); }
+  .hemi-ano { font-size: 26px; font-weight: 750; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; min-width: 64px; }
+  .hemi-cen { display: flex; gap: 6px; }
+  #hemiciclo svg { display: block; max-width: 660px; margin: 0 auto; width: 100%; height: auto; }
+  #hemiciclo .cadeira { transition: fill 0.45s ease, stroke 0.45s ease; cursor: default; transform-box: fill-box; transform-origin: center; }
+  #hemiciclo .cadeira.vaga { fill: transparent; stroke: var(--baseline); stroke-dasharray: 2.5 2.5; }
+  #hemiciclo .cadeira.nova { animation: hemi-pop 0.55s ease; }
+  @keyframes hemi-pop { 0% { transform: scale(0.2); } 60% { transform: scale(1.35); } 100% { transform: scale(1); } }
+  .hemi-legenda { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; font-size: 12px; color: var(--ink-2); margin-top: 4px; }
+  .hemi-legenda .sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
+  .hemi-legenda .sw-vaga { background: transparent; border: 1.5px dashed var(--baseline); }
+  .fdots { display: flex; flex-wrap: wrap; gap: 5px; max-width: 640px; }
+  .fdot { width: 11px; height: 11px; border-radius: 50%; background: var(--baseline); opacity: 0.35; }
+  .fdot.lit { background: var(--accent); opacity: 1; }
+  html.js .card.reveal .fdot.lit { opacity: 0.35; background: var(--baseline); transform: scale(0.8); transition: opacity 0.4s ease, background 0.4s ease, transform 0.4s ease; }
+  html.js .card.reveal.on .fdot.lit { opacity: 1; background: var(--accent); transform: scale(1); }
   .pir-row { display: grid; grid-template-columns: 1fr 56px 1fr; align-items: center; gap: 6px; margin: 5px 0; }
   .pir-lbl { text-align: center; font-size: 11.5px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
   .pir-f, .pir-m { display: flex; align-items: center; gap: 6px; min-height: 20px; }
@@ -863,6 +880,29 @@
     </section>
 
     <section class="card full reveal">
+      <h2>As cadeiras do Supremo</h2>
+      <p class="desc">O mesmo fenómeno, visto cadeira a cadeira: cada lugar do hemiciclo é um conselheiro, colorido pela idade estimada. De 2015 a 2025 a ocupação é a real, reconstruída das listas de antiguidade (cada juiz mantém a sua cadeira enquanto serve); de 2026 em diante seguem-se os cenários do gargalo — sai quem está mais velho, ao ritmo anual do cenário, e cada cadeira vagada recebe um conselheiro de ~58 anos. Nas entradas laterais (MP e juristas) a idade é uma aproximação grosseira. Carrega ▶ e vê a porta giratória a rodar — e depois a parar.</p>
+      <div class="hemi-controlos">
+        <button id="hemi-play" class="chip" aria-label="Reproduzir animação">▶ Reproduzir</button>
+        <input type="range" id="hemi-ano" min="0" max="23" value="0" aria-label="Ano">
+        <span id="hemi-lbl" class="hemi-ano"></span>
+        <span class="hemi-cen">
+          <button class="chip" data-cen="A" aria-pressed="true">Cenário A · sai aos 67</button>
+          <button class="chip" data-cen="B" aria-pressed="false">B · retém até 70</button>
+        </span>
+      </div>
+      <div id="hemiciclo"></div>
+      <div class="hemi-legenda">
+        <span><span class="sw" style="background:var(--accent)"></span>&lt;60 anos</span>
+        <span><span class="sw" style="background:var(--cat2)"></span>60–65</span>
+        <span><span class="sw" style="background:var(--cat3)"></span>66–69</span>
+        <span><span class="sw" style="background:var(--neg)"></span>70+</span>
+        <span><span class="sw sw-vaga"></span>vaga</span>
+      </div>
+      <p class="desc" id="hemi-cap" style="margin:10px 0 0;text-align:center"></p>
+    </section>
+
+    <section class="card full reveal">
       <h2>A fila para o Supremo</h2>
       <p class="desc">Por lei, os concorrentes necessários ao concurso de acesso ao STJ são os desembargadores do <b>terço superior</b> da lista de antiguidade. Com as listas anuais de 2015–2025 na base de dados, a fila e o seu destino tornam-se mensuráveis: cada promoção é detetada pela mudança de categoria entre listas consecutivas, com a idade estimada pelo método do cartão «Que idade têm os juízes?». A linha da Relação não tem ponto em 2020 (movimento suspenso pela pandemia). Não é afetado pelos filtros.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start" id="fila-grid">
@@ -871,6 +911,10 @@
           <div id="fila-promo"></div>
         </div>
         <div class="duo" id="fila-tiles"></div>
+      </div>
+      <div style="margin-top:22px">
+        <h3 class="minih" id="fdots-titulo"></h3>
+        <div class="fdots" id="fila-dots" aria-hidden="true"></div>
       </div>
       <p class="desc" id="fila-nota" style="margin:14px 0 0"></p>
     </section>
@@ -2590,6 +2634,83 @@
         gg.promoRelMedia + "/ano desde 2015); desembargadores que adiem a jubilação à espera de vaga seguram, por sua vez, os lugares que alimentam as promoções da 1.ª instância e o 1.º acesso — em rota de colisão com o pipeline recorde do CEJ (75+79 vagas em 2028–29). Sinal a acompanhar nos próximos movimentos: a queda das saídas na Relação. <i>Cartão motivado pelo relato de um desembargador leitor do csmRadar; fontes: Div. n.º 61 e 109/2026 do CSM.</i>";
     }
 
+    var cad = PAYLOAD.cadeiras;
+    if (cad && gg) {
+      var ANOS_H = cad.anosReais.concat(gg.anos);
+      var N_REAIS = cad.anosReais.length;
+      var cenAtivo = "A";
+      var ixAtual = 0;
+      function snapDe(ix) {
+        return ix < N_REAIS ? cad.real[ix] : (cenAtivo === "A" ? cad.cenA : cad.cenB)[ix - N_REAIS];
+      }
+      var FILAS_H = [[12, 78], [15, 104], [17, 130], [19, 156]];
+      var hsvg = '<svg viewBox="0 0 660 230" role="img" aria-label="As cadeiras do Supremo, ano a ano">';
+      FILAS_H.forEach(function (fr) {
+        for (var i = 0; i < fr[0]; i++) {
+          var ang = Math.PI * (1 - i / (fr[0] - 1));
+          hsvg += '<circle class="cadeira vaga" r="8" cx="' + (330 + fr[1] * Math.cos(ang)).toFixed(1) +
+            '" cy="' + (205 - fr[1] * Math.sin(ang)).toFixed(1) + '"></circle>';
+        }
+      });
+      $("hemiciclo").innerHTML = hsvg + "</svg>";
+      var cadeiras = $("hemiciclo").querySelectorAll(".cadeira");
+      function corIdade(v) {
+        return v < 60 ? "var(--accent)" : v < 66 ? "var(--cat2)" : v < 70 ? "var(--cat3)" : "var(--neg)";
+      }
+      function pintaHemi(ix, animar) {
+        ixAtual = ix;
+        var snap = snapDe(ix), ano = ANOS_H[ix], oc = 0, jov = 0;
+        cadeiras.forEach(function (el, i) {
+          var s = snap[i];
+          if (!s) { el.classList.add("vaga"); el.style.fill = ""; return; }
+          el.classList.remove("vaga");
+          el.style.fill = corIdade(s[0]);
+          if (animar && s[1] === ano && !RM) {
+            el.classList.remove("nova"); void el.offsetWidth; el.classList.add("nova");
+          }
+          oc++;
+          if (s[0] < 60) jov++;
+        });
+        $("hemi-lbl").textContent = ano;
+        $("hemi-ano").value = ix;
+        $("hemi-cap").innerHTML = "<b>" + oc + "</b> conselheiros · <b>" + jov + "</b> com menos de 60 anos · " +
+          (ix < N_REAIS ? "ocupação real (lista de antiguidade)" : "cenário " + cenAtivo + " (simulação)");
+      }
+      cadeiras.forEach(function (el, i) {
+        bindTip(el, function () {
+          var s = snapDe(ixAtual)[i];
+          return s ? "<b>Cadeira " + (i + 1) + " · " + ANOS_H[ixAtual] + "</b><br>idade estimada ~" + s[0] +
+            " anos<br>no STJ desde " + s[1] : "<b>Cadeira " + (i + 1) + "</b><br>vaga";
+        });
+      });
+      $("hemi-ano").max = ANOS_H.length - 1;
+      $("hemi-ano").addEventListener("input", function () { pintaHemi(+this.value, true); });
+      document.querySelectorAll(".hemi-cen .chip").forEach(function (ch) {
+        ch.addEventListener("click", function () {
+          cenAtivo = ch.dataset.cen;
+          document.querySelectorAll(".hemi-cen .chip").forEach(function (c) {
+            c.setAttribute("aria-pressed", String(c === ch));
+          });
+          pintaHemi(ixAtual, false);
+        });
+      });
+      var hemiTimer = null;
+      function paraHemi() {
+        if (hemiTimer) { clearInterval(hemiTimer); hemiTimer = null; }
+        $("hemi-play").textContent = "▶ Reproduzir";
+      }
+      $("hemi-play").addEventListener("click", function () {
+        if (hemiTimer) { paraHemi(); return; }
+        if (ixAtual >= ANOS_H.length - 1) pintaHemi(0, false);
+        $("hemi-play").textContent = "❚❚ Pausa";
+        hemiTimer = setInterval(function () {
+          if (ixAtual >= ANOS_H.length - 1) { paraHemi(); return; }
+          pintaHemi(ixAtual + 1, true);
+        }, RM ? 1100 : 700);
+      });
+      pintaHemi(0, false);
+    }
+
     var fl = PAYLOAD.fila;
     if (fl) {
       function seriePromo(iMed, iN, nome, cor) {
@@ -2609,6 +2730,17 @@
         '<div class="dtile"><b>' + fl.medIdade + " <small>anos</small></b><span>idade mediana estimada na fila (" + fl.minIdade + "–" + fl.maxIdade + "), com mediana de " + fl.medCat + " anos como desembargador</span></div>" +
         '<div class="dtile"><b>' + fl.pctFfila + "% ♀</b><span>mulheres na fila, contra " + fl.pctFresto + "% abaixo do terço — a antiguidade atrasa a chegada delas ao topo</span></div>" +
         '<div class="dtile"><b>+6 <small>anos</small></b><span>subida da idade de promoção ao STJ em dez anos: mediana de ~62 (2016) para ~68 (2025)</span></div>';
+      var vagas28 = gg ? gg.cenA[0] + gg.cenA[1] + gg.cenA[2] : 0;
+      var acesos = Math.round(vagas28 * 0.8);
+      var dh = "";
+      for (var di = 0, li = 0; di < fl.n; di++) {
+        var aceso = (di * 47) % fl.n < acesos;
+        dh += '<span class="fdot' + (aceso ? " lit" : "") + '"' +
+          (aceso ? ' style="transition-delay:' + (li++ * 30) + 'ms"' : "") + "></span>";
+      }
+      $("fila-dots").innerHTML = dh;
+      $("fdots-titulo").textContent = "A fila em pontos: dos " + fl.n + " convocáveis, ~" + acesos +
+        " devem chegar até agosto de 2028 — espalhados pela lista, porque a graduação é curricular, não por antiguidade";
       $("fila-nota").innerHTML = "As listas de antiguidade registam " + fl.nPromoSTJ + " promoções ao STJ e " + fl.nPromoRel +
         " à Relação em 2016–2025. A leitura central: a idade de chegada ao Supremo subiu seis anos numa década — promoções cada vez mais tardias, mandatos cada vez mais curtos, a porta giratória do cartão anterior. O 18.º concurso quebra a série: a maioria dos 17 empossados em julho de 2026 tem <b>menos de 60 anos</b>, a chegada mais jovem do registo. O outro lado da moeda está na aritmética da fila: 156 convocáveis para 0–7 vagas anuais projetadas nos próximos concursos — com mediana de 64 anos, a maioria de quem hoje espera não chegará a conselheiro.";
     }
