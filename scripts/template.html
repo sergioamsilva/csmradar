@@ -531,6 +531,7 @@
     #gargalo-grid { grid-template-columns: 1fr !important; }
     #idades-grid { grid-template-columns: 1fr !important; }
     #idades-tiles { grid-template-columns: 1fr 1fr !important; }
+    #fila-grid { grid-template-columns: 1fr !important; }
   }
   .minih { margin: 0 0 10px; font-size: 13px; font-weight: 700; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.04em; }
   .pir-row { display: grid; grid-template-columns: 1fr 56px 1fr; align-items: center; gap: 6px; margin: 5px 0; }
@@ -859,6 +860,19 @@
         <div class="duo" id="gargalo-tiles"></div>
       </div>
       <p class="desc" id="gargalo-nota" style="margin:14px 0 0"></p>
+    </section>
+
+    <section class="card full reveal">
+      <h2>A fila para o Supremo</h2>
+      <p class="desc">Por lei, os concorrentes necessários ao concurso de acesso ao STJ são os desembargadores do <b>terço superior</b> da lista de antiguidade. Com as listas anuais de 2015–2025 na base de dados, a fila e o seu destino tornam-se mensuráveis: cada promoção é detetada pela mudança de categoria entre listas consecutivas, com a idade estimada pelo método do cartão «Que idade têm os juízes?». A linha da Relação não tem ponto em 2020 (movimento suspenso pela pandemia). Não é afetado pelos filtros.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start" id="fila-grid">
+        <div>
+          <h3 class="minih">Idade mediana estimada à promoção, por ano</h3>
+          <div id="fila-promo"></div>
+        </div>
+        <div class="duo" id="fila-tiles"></div>
+      </div>
+      <p class="desc" id="fila-nota" style="margin:14px 0 0"></p>
     </section>
 
     <section class="card reveal">
@@ -2287,6 +2301,14 @@
       nota.innerHTML = "<b>Validação externa:</b> o Relatório Anual do CSM regista, por ano civil, " +
         of.map(function (q) { return q[1] + " (" + q[0] + ")"; }).join(" · ") +
         " cessações — " + fmt(somaOf) + " em 2019–2023. A estimativa acima, medida em anos judiciais, acompanha o padrão (pico em 2021) com um excesso de ~20%, explicado por variações de grafia dos nomes entre quadros e por saídas temporárias longas.";
+      if (PAYLOAD.fila && PAYLOAD.fila.saidasListas) {
+        var sl = PAYLOAD.fila.saidasListas.filter(function (r) { return r[0] >= 2019 && r[0] <= 2023; });
+        nota.innerHTML += " <b>Segunda via, mais fina:</b> as listas de antiguidade anuais (2015–2025) dão as cessações por desaparecimento da lista — " +
+          sl.map(function (r) { return r[1] + " (" + r[0] + ")"; }).join(" · ") +
+          " no mesmo período, um excesso de só ~10% face à série oficial, e desta vez <b>incluindo o STJ</b>: " +
+          PAYLOAD.fila.saidasListas.map(function (r) { return r[2]; }).reduce(function (s, v) { return s + v; }, 0) +
+          " saídas de conselheiros em 2016–2025 (14–18/ano no período recente — a rotatividade que o cartão do gargalo explica).";
+      }
     }
   }
 
@@ -2566,6 +2588,29 @@
         '<div class="dtile"><b>0–7<small>/ano</small></b><span>vagas no STJ em 2029–2034 conforme o cenário, contra ' + gg.cenA[0] + " em 2026</span></div>";
       $("gargalo-nota").innerHTML = "A leitura é a mesma nos dois cenários: depois da vaga excecional de 2026–2028, o Supremo quase não liberta lugares durante anos — no cenário de retenção, o concurso seguinte (vagas a partir de agosto de 2028) apanha três anos praticamente a zero. E o gargalo desce em cascata: cada vaga que não abre no STJ é uma promoção a menos na Relação (média de " +
         gg.promoRelMedia + "/ano desde 2015); desembargadores que adiem a jubilação à espera de vaga seguram, por sua vez, os lugares que alimentam as promoções da 1.ª instância e o 1.º acesso — em rota de colisão com o pipeline recorde do CEJ (75+79 vagas em 2028–29). Sinal a acompanhar nos próximos movimentos: a queda das saídas na Relação. <i>Cartão motivado pelo relato de um desembargador leitor do csmRadar; fontes: Div. n.º 61 e 109/2026 do CSM.</i>";
+    }
+
+    var fl = PAYLOAD.fila;
+    if (fl) {
+      function seriePromo(iMed, iN, nome, cor) {
+        return { k: nome, c: cor, pts: fl.promoIdade.filter(function (r) { return r[iMed] != null; })
+          .map(function (r) {
+            return { x: r[0], y: r[iMed], tip: "<b>" + esc(nome) + " · " + r[0] + "</b><br>idade mediana estimada: " +
+              String(r[iMed]).replace(".", ",") + " anos<br>" + fmt(r[iN]) + (r[iN] === 1 ? " promoção" : " promoções") };
+          }) };
+      }
+      lineChart("fila-promo", [
+        seriePromo(1, 2, "Ao STJ", "var(--accent)"),
+        seriePromo(3, 4, "À Relação", "var(--cat2)"),
+      ], { yMin: 50, yMax: 70, yTicks: [50, 55, 60, 65, 70],
+        endFmt: function (pt) { return Math.round(pt.y) + " anos"; } });
+      $("fila-tiles").innerHTML =
+        '<div class="dtile"><b>' + fl.n + "</b><span>desembargadores convocáveis (terço superior de " + fl.nDes + ") — 126 concorreram no 18.º concurso</span></div>" +
+        '<div class="dtile"><b>' + fl.medIdade + " <small>anos</small></b><span>idade mediana estimada na fila (" + fl.minIdade + "–" + fl.maxIdade + "), com mediana de " + fl.medCat + " anos como desembargador</span></div>" +
+        '<div class="dtile"><b>' + fl.pctFfila + "% ♀</b><span>mulheres na fila, contra " + fl.pctFresto + "% abaixo do terço — a antiguidade atrasa a chegada delas ao topo</span></div>" +
+        '<div class="dtile"><b>+6 <small>anos</small></b><span>subida da idade de promoção ao STJ em dez anos: mediana de ~62 (2016) para ~68 (2025)</span></div>';
+      $("fila-nota").innerHTML = "As listas de antiguidade registam " + fl.nPromoSTJ + " promoções ao STJ e " + fl.nPromoRel +
+        " à Relação em 2016–2025. A leitura central: a idade de chegada ao Supremo subiu seis anos numa década — promoções cada vez mais tardias, mandatos cada vez mais curtos, a porta giratória do cartão anterior. O 18.º concurso quebra a série: a maioria dos 17 empossados em julho de 2026 tem <b>menos de 60 anos</b>, a chegada mais jovem do registo. O outro lado da moeda está na aritmética da fila: 156 convocáveis para 0–7 vagas anuais projetadas nos próximos concursos — com mediana de 64 anos, a maioria de quem hoje espera não chegará a conselheiro.";
     }
 
     var pj = PAYLOAD.projecao;

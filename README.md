@@ -38,11 +38,13 @@ Todos os dados provêm de documentos oficiais de acesso público:
   cursos 34.º (48 vagas em 2018 → 42 colocações no MJO 2021) e 40.º (52 vagas
   em 2023 → 56 colocações no MJO 2026) —
   [`fontes/cej_e_validacao_fontes.tsv`](fontes/cej_e_validacao_fontes.tsv).
-- **Lista de antiguidade dos magistrados judiciais** — reportada a 31-12-2025,
-  homologada pelo CSM em 26-03-2026: tempo de serviço na categoria e na
-  magistratura dos 1941 magistrados judiciais no ativo (60 juízes
-  conselheiros, 470 desembargadores, 1411 juízes de direito). Não contém
-  datas de nascimento.
+- **Listas de antiguidade dos magistrados judiciais** — séries anuais
+  reportadas a 31 de dezembro de 2015 a 2025 (11 listas, ~1900–2000
+  magistrados cada; a de 2025, homologada em 26-03-2026, regista 1941 no
+  ativo: 60 juízes conselheiros, 470 desembargadores, 1411 juízes de
+  direito). Contêm o tempo de serviço na categoria e na magistratura; não
+  contêm datas de nascimento — URL em
+  [`fontes/cej_e_validacao_fontes.tsv`](fontes/cej_e_validacao_fontes.tsv).
 - **Acesso ao STJ** — Divulgações do CSM n.º 61/2026 (graduação do
   18.º Concurso Curricular de Acesso ao STJ) e n.º 109/2026 (graduação final
   após reclamações: 126 desembargadores, 12 procuradores-gerais adjuntos e
@@ -108,6 +110,19 @@ agregadas são apresentadas (pirâmide etária por género, medianas por
 categoria, contagem anual de quem atinge os 66 e os 70 anos). Os 15 juízes
 conselheiros de entrada lateral (Ministério Público e juristas de mérito),
 sem carreira judicial contável, são excluídos da estimativa.
+
+### Séries das listas de antiguidade (2015–2025)
+
+A comparação entre listas anuais consecutivas, com nomes normalizados,
+produz duas séries novas: **cessações exatas** (um magistrado presente na
+lista reportada a 31-12 de um ano e ausente de todas as seguintes cessou
+funções no ano civil seguinte — série validada contra o Relatório Anual do
+CSM 2019–2023 com um excesso de ~10%, e que inclui o STJ, ausente da
+estimativa por quadros) e **promoções datadas** (mudança de categoria entre
+listas: 402 promoções à Relação e 102 ao STJ em 2016–2025, a que se associa
+a idade estimada no ano da promoção). O terço superior da lista de
+antiguidade dos desembargadores — os concorrentes necessários ao concurso de
+acesso ao STJ — é lido diretamente da ordenação da própria lista.
 
 ### Cenários de vagas no STJ («o gargalo»)
 

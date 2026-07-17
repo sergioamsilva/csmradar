@@ -315,6 +315,67 @@ def main():
             "n": sum(len(v) for v in idades_cat.values()),
         }
 
+    # ---- listas de antiguidade 2015-2025: saídas exatas, promoções datadas
+    # e a fila para o Supremo (terço superior dos desembargadores) ----
+    fila_payload = None
+    if tem_antiguidade and idades_payload:
+        pres = {}
+        for ano_r, nome, cat, mag, gen, o in con.execute(
+                """SELECT ano_ref, nome, categoria, anos_magistratura, genero, ord
+                   FROM antiguidade"""):
+            pres.setdefault(fold_nome(nome), {})[ano_r] = (cat, mag, gen, o)
+        anos_l = sorted({a for d in pres.values() for a in d})
+        ult_l = anos_l[-1]
+
+        # saídas: presente a 31-12-Y, ausente das listas seguintes -> sai em Y+1
+        saidas_l = {a: Counter() for a in range(anos_l[0] + 1, ult_l + 1)}
+        for f, d in pres.items():
+            u = max(d)
+            if u < ult_l:
+                saidas_l[u + 1][d[u][0]] += 1
+        saidas_listas = [[a, sum(c.values()), c["Juiz Conselheiro"],
+                          c["Juiz Desembargador"], c["Juiz de Direito"]]
+                         for a, c in sorted(saidas_l.items())]
+
+        # idade estimada à promoção (mudança de categoria entre listas anuais)
+        p_stj, p_rel = {}, {}
+        for f, d in pres.items():
+            ss = sorted(d)
+            for a0, a1 in zip(ss, ss[1:]):
+                c0, c1 = d[a0][0], d[a1][0]
+                idade_p = idade_nomeacao(a1 + 1.0 - d[a1][1]) + d[a1][1]
+                if c0 == "Juiz Desembargador" and c1 == "Juiz Conselheiro":
+                    p_stj.setdefault(a1, []).append(idade_p)
+                elif c0 == "Juiz de Direito" and c1 == "Juiz Desembargador":
+                    p_rel.setdefault(a1, []).append(idade_p)
+        promo_idade = []
+        for a in range(anos_l[0] + 1, ult_l + 1):
+            promo_idade.append([
+                a,
+                round(statistics.median(p_stj[a]), 1) if a in p_stj else None, len(p_stj.get(a, [])),
+                round(statistics.median(p_rel[a]), 1) if a in p_rel else None, len(p_rel.get(a, []))])
+
+        # a fila: terço superior da lista de 2025
+        des_fila = con.execute(
+            """SELECT genero, anos_categoria, anos_magistratura FROM antiguidade
+               WHERE ano_ref = 2025 AND categoria = 'Juiz Desembargador'
+               ORDER BY ord""").fetchall()
+        n3 = len(des_fila) // 3
+        fila, resto = des_fila[:n3], des_fila[n3:]
+        id_fila = sorted(idade_nomeacao(2026.0 - m) + m for _, _, m in fila)
+        fila_payload = {
+            "n": n3, "nDes": len(des_fila),
+            "medIdade": round(statistics.median(id_fila)),
+            "minIdade": round(id_fila[0]), "maxIdade": round(id_fila[-1]),
+            "pctFfila": round(100 * sum(1 for g, _, _ in fila if g == "F") / n3),
+            "pctFresto": round(100 * sum(1 for g, _, _ in resto if g == "F") / len(resto)),
+            "medCat": round(statistics.median([c for _, c, _ in fila])),
+            "promoIdade": promo_idade,
+            "saidasListas": saidas_listas,
+            "nPromoSTJ": sum(len(v) for v in p_stj.values()),
+            "nPromoRel": sum(len(v) for v in p_rel.values()),
+        }
+
     promo_rel = [n for (n,) in con.execute(
         """SELECT COUNT(*) FROM movimentos
            WHERE instancia = 'Relação' AND motivo LIKE 'Promo%' AND ano >= 2015
@@ -328,7 +389,8 @@ def main():
                           "cejPipeline": cej_pipeline,
                           "carreiraSaida": carreira_saida, "promoAnos": promo_anos,
                           "saidasComarca": saidas_comarca, "projecao": projecao,
-                          "gargalo": gargalo, "idades": idades_payload},
+                          "gargalo": gargalo, "idades": idades_payload,
+                          "fila": fila_payload},
                          ensure_ascii=False, separators=(",", ":"))
     payload = payload.replace("</", "<\\/")
 
