@@ -82,6 +82,13 @@ def main():
                   tipo_lugar
            FROM movimentos ORDER BY ano, nome"""):
         mot = norm_motivo(motivo)
+        # 1.º acesso: a "origem" é a comarca de ESTÁGIO — a partida do
+        # recém-formado não é a saída de um efetivo, e a chegada ao estágio
+        # nunca passou pelo MJO (assimetria apontada por um leitor magistrado;
+        # Setúbal 2014-26: saldo -13 era 100% este artefacto). No payload o
+        # 1.º acesso conta apenas no destino.
+        if mot == "1.º acesso":
+            o, oc = None, None
         prec = 1 if (mot in PRECARIO_MOTIVO
                      or (tl and tl.startswith("Auxiliar"))
                      or "Auxiliar" in (d or "")) else 0

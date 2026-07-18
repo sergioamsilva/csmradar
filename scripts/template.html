@@ -622,7 +622,7 @@
 
     <section class="card full reveal">
       <h2>Fluxos entre comarcas</h2>
-      <p class="desc" id="flows-desc">Principais rotas de origem → destino (excluídos os movimentos dentro da mesma comarca; 1.ª instância identificável desde 2014). Espessura proporcional ao n.º de juízes; passar o rato para isolar uma rota.</p>
+      <p class="desc" id="flows-desc">Principais rotas de origem → destino (excluídos os movimentos dentro da mesma comarca e o 1.º acesso, cuja «origem» é apenas a comarca de estágio; 1.ª instância identificável desde 2014). Espessura proporcional ao n.º de juízes; passar o rato para isolar uma rota.</p>
       <div id="flows"></div>
     </section>
 
@@ -637,7 +637,7 @@
 
     <section class="card reveal">
       <h2>Saldo por comarca</h2>
-      <p class="desc">Entradas menos saídas de juízes em cada comarca/tribunal. Considera apenas movimentos com origem e destino identificados (exclui primeiras colocações e grande parte de 2014).</p>
+      <p class="desc">Entradas menos saídas de juízes em cada comarca/tribunal. Considera apenas movimentos com origem e destino identificados (grande parte de 2014 fica de fora). No 1.º acesso conta só o destino: a «origem» desses movimentos é a comarca de <b>estágio</b>, e a partida do recém-formado não é a saída de um efetivo — sem esta correção, sugerida por um leitor magistrado, os saldos de Lisboa, Porto, Aveiro ou Setúbal apareciam artificialmente negativos.</p>
       <div class="poles"><span class="p-neg">← perde juízes</span><span class="p-pos">ganha juízes →</span></div>
       <div id="saldo"></div>
     </section>

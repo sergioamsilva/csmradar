@@ -64,6 +64,14 @@ Todos os dados provêm de documentos oficiais de acesso público:
 2. **Normalização.** Comarcas reduzidas à nomenclatura canónica das 23 comarcas
    pós-2014; motivos de movimento reconciliados num vocabulário comum;
    distâncias calculadas em linha reta (haversine) entre as sedes de comarca.
+   Nos movimentos de **primeiro acesso** considera-se apenas o destino: a
+   «origem» constante do documento é a comarca de estágio, e a partida do
+   recém-formado não corresponde à saída de um juiz efetivo — sem esta
+   correção (sugerida por um leitor magistrado em julho de 2026), os saldos
+   das comarcas que acolhem estagiários apareciam artificialmente negativos
+   (Lisboa: −59 → 0; Setúbal: −13 → 0, em 2014–2026), dado que a colocação
+   em estágio é decidida fora dos MJO e a respetiva entrada nunca é
+   registada.
 3. **Género.** Obtido do tratamento honorífico constante dos próprios
    documentos («Dr.»/«Dr.ª/Dra.») até 2010 e, nos restantes anos, inferido do
    primeiro nome próprio com listas de exceções; taxa de classificação de 100%
