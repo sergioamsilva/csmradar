@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Observatório dos movimentos judiciais em Portugal, 2004–2026: análise de 12 747 colocações de juízes a partir das divulgações oficiais do Conselho Superior da Magistratura e do Diário da República.">
 <meta property="og:title" content="csmRadar · Movimentos Judiciais em Portugal, 2004–2026">
-<meta property="og:description" content="12 747 colocações de juízes em 23 anos: fluxos entre comarcas, preferências, carreira e género, a partir dos documentos oficiais do CSM e do Diário da República.">
+<meta property="og:description" content="12 747 colocações de juízes em 23 anos: fluxos entre comarcas, preferências, carreira, género, idades estimadas, o gargalo do STJ e a fila para o Supremo — a partir dos documentos oficiais do CSM e do Diário da República.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://sergioamsilva.github.io/csmradar/">
 <meta property="og:image" content="https://sergioamsilva.github.io/csmradar/og.png">
@@ -1857,25 +1857,10 @@
     var comPref = DATA.filter(function (r) { return r[PREF] != null; });
     var p1 = Math.round(100 * comPref.filter(function (r) { return r[PREF] === 1; }).length / comPref.length);
 
-    var cnt = {};
-    DATA.forEach(function (r) {
-      if (r[ANO] < 2017 || !r[DCOM]) return;
-      var parts = r[DST].split(" > ");
-      var i = -1;
-      for (var j = 0; j < parts.length; j++) if (parts[j].indexOf("TJ Comarca") === 0) { i = j; break; }
-      if (i === -1 || parts.length < i + 3 || !/^ju[íi]?z/i.test(parts[i + 2])) return;
-      var k = parts[i + 1] + " · " + parts[i + 2];
-      cnt[k] = (cnt[k] || 0) + 1;
-    });
-    var topLugar = Object.keys(cnt).sort(function (a, b) { return cnt[b] - cnt[a]; })[0] || "";
-    var topLugarCurto = topLugar.split(" · ")[0].replace(/Juízo de competência genérica (de |da |do )?/i, "");
-
     function medPref(g) {
       return Math.round(median(DATA.filter(function (r) { return r[GEN] === g && r[PREF] != null; })
         .map(function (r) { return r[PREF]; })) || 0);
     }
-    var stj = QGEN.filter(function (q) { return q[1] === "STJ"; });
-    var stj0 = stj[0], stj1 = stj[stj.length - 1];
 
     var rotas = {};
     DATA.forEach(function (r) {
@@ -1888,11 +1873,23 @@
 
     var itens = [
       { v: p1, suf: "%", fr: "dos juízes ficam na sua 1.ª preferência", a: "#sec-colocacoes" },
-      { v: cnt[topLugar] || 0, suf: "×", fr: topLugarCurto + " mudou de juiz desde 2017 — um por ano", a: "#sec-colocacoes" },
       { v: medPref("F"), suf: ".ª vs " + medPref("M") + ".ª", fr: "preferência mediana das juízas vs juízes", a: "#sec-genero" },
-      { v: stj1 ? Math.round(100 * stj1[3] / stj1[2]) : 0, suf: "%", fr: "de mulheres no STJ (eram " + (stj0 ? Math.round(100 * stj0[3] / stj0[2]) : 0) + "% em " + (stj0 ? stj0[0] : "") + ")", a: "#sec-genero" },
       { v: rotas[topRota] || 0, suf: "", fr: topRota + ": a rota mais percorrida", a: "#sec-panorama" },
     ];
+    if (PAYLOAD.fila && PAYLOAD.fila.promoIdade) {
+      var pi = PAYLOAD.fila.promoIdade.filter(function (r) { return r[1] != null; });
+      var pi0 = pi[0], pi1 = pi[pi.length - 1];
+      itens.splice(1, 0, {
+        v: Math.round(pi1[1]), suf: " anos",
+        fr: "a idade de chegada ao STJ (era " + Math.round(pi0[1]) + " em " + pi0[0] + ")",
+        a: "#sec-sistema",
+      });
+      itens.splice(3, 0, {
+        v: PAYLOAD.fila.n, suf: "",
+        fr: "desembargadores na fila para o Supremo — para 0–7 vagas por ano",
+        a: "#sec-sistema",
+      });
+    }
     renderDestaques.__itens = itens;
     $("destaques").innerHTML = itens.map(function (it) {
       return '<a class="dest reveal" href="' + it.a + '"><span class="rule"></span>' +
